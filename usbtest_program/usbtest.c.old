@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <errno.h>
+#include <os.h>
+
+int main(int argc, char *argv[]) {
+    printf("USB test program\n");
+
+    printf("Opening test.txt\n");
+    FILE *f = fopen("/usb/0/test.txt", "r");
+    if (!f) {
+        printf("Failed: %s\n", strerror(errno));
+        wait_key_pressed();
+        return 1;
+    }
+
+    printf("OK!\n");
+    wait_key_pressed();
+    return 0;
+}

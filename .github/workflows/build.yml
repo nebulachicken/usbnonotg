@@ -1,0 +1,109 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NDLESS_REPO: https://github.com/ndless-nspire/Ndless.git
+  # Branch, tag or commit of Ndless to build against. Once you have a build you
+  # trust, pin this to a commit SHA so upstream changes cannot break your CI.
+  NDLESS_REF: master
+  # Bump to throw away the cached toolchain/SDK and rebuild it from scratch.
+  NDLESS_CACHE_VERSION: v1
+
+jobs:
+  # Fast host-side checks: no Ndless needed.
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Host tests (ASan/UBSan)
+        run: make test
+      - name: Generated hook pattern table matches its manifest
+        run: make patterns-check
+
+  # Cross-compiles the .tns programs with the Ndless SDK.
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      # Needed to BUILD the toolchain and, just as much, to RUN it: the cross
+      # compiler links GMP/MPFR/MPC dynamically and genzehn needs Boost, so this
+      # must happen on cache hits too.
+      - name: Install Ndless dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y binutils g++ gcc git make \
+            libboost-program-options-dev libgmp-dev libmpc-dev libmpfr-dev \
+            libtool-bin python3-dev texinfo wget zlib1g-dev
+
+      - name: Restore cached Ndless toolchain and SDK
+        id: ndless-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/ndless
+          key: ndless-ubuntu-24.04-${{ env.NDLESS_REF }}-${{ env.NDLESS_CACHE_VERSION }}
+
+      # Follows the Ndless "C and assembly development introduction": clone
+      # recursively, run the SDK's build_toolchain.sh, put the toolchain and SDK
+      # bin directories on PATH, then run make at the top level. Building GCC,
+      # binutils, newlib and GDB from source takes a long time; the result is
+      # cached so later runs skip all of this.
+      - name: Build Ndless toolchain and SDK
+        if: steps.ndless-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --recursive "$NDLESS_REPO" ~/ndless
+          cd ~/ndless
+          git checkout "$NDLESS_REF"
+          git submodule update --init --recursive
+          (cd ndless-sdk/toolchain && PARALLEL="-j$(nproc)" ./build_toolchain.sh)
+          export PATH="$HOME/ndless/ndless-sdk/toolchain/install/bin:$HOME/ndless/ndless-sdk/bin:$PATH"
+          make -j"$(nproc)"
+          # sources downloaded for the toolchain are not needed afterwards
+          rm -rf ndless-sdk/toolchain/download
+
+      # Saved right after the SDK builds, so a failure further down never costs
+      # another toolchain build.
+      - name: Save Ndless toolchain and SDK to cache
+        if: steps.ndless-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/ndless
+          key: ${{ steps.ndless-cache.outputs.cache-primary-key }}
+
+      - name: Put the Ndless tools on PATH
+        run: |
+          echo "$HOME/ndless/ndless-sdk/toolchain/install/bin" >> "$GITHUB_PATH"
+          echo "$HOME/ndless/ndless-sdk/bin" >> "$GITHUB_PATH"
+
+      - name: Show toolchain versions
+        run: |
+          nspire-gcc --version | head -n 1
+          command -v genzehn make-prg
+
+      - name: Build the driver
+        run: make -j"$(nproc)" all
+
+      - name: Build the hook scanner
+        run: make hookscan
+
+      - name: Build the on-device test program
+        run: make usbtest
+
+      - name: Collect the programs
+        run: make dist
+
+      - name: Upload the programs
+        uses: actions/upload-artifact@v4
+        with:
+          name: usb-storage-${{ github.sha }}
+          path: dist/*.tns
+          if-no-files-found: error

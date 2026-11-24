@@ -1,0 +1,10 @@
+.toolchain/
+build/
+*.o
+*.elf
+*.tns
+*.zehn
+original-driver.zip
+__pycache__/
+
+dist/

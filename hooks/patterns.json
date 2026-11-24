@@ -1,0 +1,1085 @@
+{
+  "schema_version": 1,
+  "reference_os": "CX II 6.2.0.333 NCAS",
+  "reference_sha256": "3b0bc1af94b845574de9e987fd6ac77bd7f4c6afa183cb2b1bbba54b4f4a017d",
+  "patterns": [
+    {
+      "id": "findmount",
+      "name": "pc_findmount",
+      "reference_address": "0x10499c38",
+      "words": [
+        {
+          "value": "0xe3500000",
+          "mask": "0xffffffff",
+          "reference": "0xe3500000"
+        },
+        {
+          "value": "0xe92d4038",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4038"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000001"
+        },
+        {
+          "value": "0xe3a00000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a00000"
+        },
+        {
+          "value": "0xe8bd8038",
+          "mask": "0xffffffff",
+          "reference": "0xe8bd8038"
+        },
+        {
+          "value": "0xe3a01001",
+          "mask": "0xffffffff",
+          "reference": "0xe3a01001"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xebffffdd"
+        },
+        {
+          "value": "0xe1a04800",
+          "mask": "0xffffffff",
+          "reference": "0xe1a04800"
+        },
+        {
+          "value": "0xe1a04844",
+          "mask": "0xffffffff",
+          "reference": "0xe1a04844"
+        },
+        {
+          "value": "0xe3740001",
+          "mask": "0xffffffff",
+          "reference": "0xe3740001"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0afffff7"
+        },
+        {
+          "value": "0xe51f5000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f506c"
+        },
+        {
+          "value": "0xe3a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a03000"
+        },
+        {
+          "value": "0xe1a02005",
+          "mask": "0xffffffff",
+          "reference": "0xe1a02005"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xea00000c"
+        },
+        {
+          "value": "0xe591e00c",
+          "mask": "0xffffffff",
+          "reference": "0xe591e00c"
+        },
+        {
+          "value": "0xe1a0382c",
+          "mask": "0xffffffff",
+          "reference": "0xe1a0382c"
+        },
+        {
+          "value": "0xe31e0001",
+          "mask": "0xffffffff",
+          "reference": "0xe31e0001"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a000002"
+        },
+        {
+          "value": "0xe1d1c1f4",
+          "mask": "0xffffffff",
+          "reference": "0xe1d1c1f4"
+        },
+        {
+          "value": "0xe15c0004",
+          "mask": "0xffffffff",
+          "reference": "0xe15c0004"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a00000e"
+        },
+        {
+          "value": "0xe2832001",
+          "mask": "0xffffffff",
+          "reference": "0xe2832001"
+        },
+        {
+          "value": "0xe1a00802",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00802"
+        }
+      ]
+    },
+    {
+      "id": "parsedrive",
+      "name": "pc_parsedrive",
+      "reference_address": "0x10499bcc",
+      "words": [
+        {
+          "value": "0xe3500000",
+          "mask": "0xffffffff",
+          "reference": "0xe3500000"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a000013"
+        },
+        {
+          "value": "0xe5d03000",
+          "mask": "0xffffffff",
+          "reference": "0xe5d03000"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a000010"
+        },
+        {
+          "value": "0xe5d02001",
+          "mask": "0xffffffff",
+          "reference": "0xe5d02001"
+        },
+        {
+          "value": "0xe352003a",
+          "mask": "0xffffffff",
+          "reference": "0xe352003a"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a00000d"
+        },
+        {
+          "value": "0xe2430041",
+          "mask": "0xffffffff",
+          "reference": "0xe2430041"
+        },
+        {
+          "value": "0xe200c0ff",
+          "mask": "0xffffffff",
+          "reference": "0xe200c0ff"
+        },
+        {
+          "value": "0xe35c0019",
+          "mask": "0xffffffff",
+          "reference": "0xe35c0019"
+        },
+        {
+          "value": "0xe2433061",
+          "mask": "0xffffffff",
+          "reference": "0xe2433061"
+        },
+        {
+          "value": "0x91a00800",
+          "mask": "0xffffffff",
+          "reference": "0x91a00800"
+        },
+        {
+          "value": "0xe20310ff",
+          "mask": "0xffffffff",
+          "reference": "0xe20310ff"
+        },
+        {
+          "value": "0x851f0000",
+          "mask": "0xff7ff000",
+          "reference": "0x859f0028"
+        },
+        {
+          "value": "0x91a00820",
+          "mask": "0xffffffff",
+          "reference": "0x91a00820"
+        },
+        {
+          "value": "0xe3510019",
+          "mask": "0xffffffff",
+          "reference": "0xe3510019"
+        },
+        {
+          "value": "0x91a03803",
+          "mask": "0xffffffff",
+          "reference": "0x91a03803"
+        },
+        {
+          "value": "0x91a00823",
+          "mask": "0xffffffff",
+          "reference": "0x91a00823"
+        },
+        {
+          "value": "0xe1a00800",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00800"
+        },
+        {
+          "value": "0xe1a00840",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00840"
+        },
+        {
+          "value": "0xe12fff1e",
+          "mask": "0xffffffff",
+          "reference": "0xe12fff1e"
+        },
+        {
+          "value": "0xe3510001",
+          "mask": "0xffffffff",
+          "reference": "0xe3510001"
+        },
+        {
+          "value": "0x151f0000",
+          "mask": "0xff7ff000",
+          "reference": "0x159f0004"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1afffff9"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xeaffefae"
+        }
+      ]
+    },
+    {
+      "id": "semaphore_create",
+      "name": "SMC_Create_Semaphore",
+      "reference_address": "0x103a690c",
+      "words": [
+        {
+          "value": "0xe92d40f8",
+          "mask": "0xffffffff",
+          "reference": "0xe92d40f8"
+        },
+        {
+          "value": "0xe1a04000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a04000"
+        },
+        {
+          "value": "0xe1a05001",
+          "mask": "0xffffffff",
+          "reference": "0xe1a05001"
+        },
+        {
+          "value": "0xe1a06002",
+          "mask": "0xffffffff",
+          "reference": "0xe1a06002"
+        },
+        {
+          "value": "0xe1a07003",
+          "mask": "0xffffffff",
+          "reference": "0xe1a07003"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb021156"
+        },
+        {
+          "value": "0xe3a01000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a01000"
+        },
+        {
+          "value": "0xe584100c",
+          "mask": "0xffffffff",
+          "reference": "0xe584100c"
+        },
+        {
+          "value": "0xe5d5c000",
+          "mask": "0xffffffff",
+          "reference": "0xe5d5c000"
+        },
+        {
+          "value": "0xe3570006",
+          "mask": "0xffffffff",
+          "reference": "0xe3570006"
+        },
+        {
+          "value": "0xe5c4c010",
+          "mask": "0xffffffff",
+          "reference": "0xe5c4c010"
+        },
+        {
+          "value": "0xe5d50001",
+          "mask": "0xffffffff",
+          "reference": "0xe5d50001"
+        },
+        {
+          "value": "0x03a01001",
+          "mask": "0xffffffff",
+          "reference": "0x03a01001"
+        },
+        {
+          "value": "0xe5c40011",
+          "mask": "0xffffffff",
+          "reference": "0xe5c40011"
+        },
+        {
+          "value": "0xe5d53002",
+          "mask": "0xffffffff",
+          "reference": "0xe5d53002"
+        },
+        {
+          "value": "0xe5c43012",
+          "mask": "0xffffffff",
+          "reference": "0xe5c43012"
+        },
+        {
+          "value": "0xe5d52003",
+          "mask": "0xffffffff",
+          "reference": "0xe5d52003"
+        },
+        {
+          "value": "0xe5c42013",
+          "mask": "0xffffffff",
+          "reference": "0xe5c42013"
+        },
+        {
+          "value": "0xe5d5c004",
+          "mask": "0xffffffff",
+          "reference": "0xe5d5c004"
+        },
+        {
+          "value": "0xe5c4c014",
+          "mask": "0xffffffff",
+          "reference": "0xe5c4c014"
+        },
+        {
+          "value": "0xe5d50005",
+          "mask": "0xffffffff",
+          "reference": "0xe5d50005"
+        },
+        {
+          "value": "0xe5c40015",
+          "mask": "0xffffffff",
+          "reference": "0xe5c40015"
+        },
+        {
+          "value": "0xe5d53006",
+          "mask": "0xffffffff",
+          "reference": "0xe5d53006"
+        },
+        {
+          "value": "0xe51f0000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f005c"
+        }
+      ]
+    },
+    {
+      "id": "semaphore_obtain",
+      "name": "SMC_Obtain_Semaphore",
+      "reference_address": "0x103a69dc",
+      "words": [
+        {
+          "value": "0xe92d40f0",
+          "mask": "0xffffffff",
+          "reference": "0xe92d40f0"
+        },
+        {
+          "value": "0xe24dd024",
+          "mask": "0xffffffff",
+          "reference": "0xe24dd024"
+        },
+        {
+          "value": "0xe1a05000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a05000"
+        },
+        {
+          "value": "0xe1a04001",
+          "mask": "0xffffffff",
+          "reference": "0xe1a04001"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb021123"
+        },
+        {
+          "value": "0xe51f0000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f00b0"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb0211af"
+        },
+        {
+          "value": "0xe5953018",
+          "mask": "0xffffffff",
+          "reference": "0xe5953018"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x12433001",
+          "mask": "0xffffffff",
+          "reference": "0x12433001"
+        },
+        {
+          "value": "0x15853018",
+          "mask": "0xffffffff",
+          "reference": "0x15853018"
+        },
+        {
+          "value": "0x13a04000",
+          "mask": "0xffffffff",
+          "reference": "0x13a04000"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a000003"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb0211c2"
+        },
+        {
+          "value": "0xe1a00004",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00004"
+        },
+        {
+          "value": "0xe28dd024",
+          "mask": "0xffffffff",
+          "reference": "0xe28dd024"
+        },
+        {
+          "value": "0xe8bd80f0",
+          "mask": "0xffffffff",
+          "reference": "0xe8bd80f0"
+        },
+        {
+          "value": "0xe3540000",
+          "mask": "0xffffffff",
+          "reference": "0xe3540000"
+        },
+        {
+          "value": "0x03e04032",
+          "mask": "0xffffffff",
+          "reference": "0x03e04032"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0afffff8"
+        }
+      ]
+    },
+    {
+      "id": "semaphore_release",
+      "name": "SMC_Release_Semaphore",
+      "reference_address": "0x103a6894",
+      "words": [
+        {
+          "value": "0xe92d4038",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4038"
+        },
+        {
+          "value": "0xe1a05000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a05000"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb021177"
+        },
+        {
+          "value": "0xe51f0000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f0060"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb021203"
+        },
+        {
+          "value": "0xe5953020",
+          "mask": "0xffffffff",
+          "reference": "0xe5953020"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000005"
+        },
+        {
+          "value": "0xe5952018",
+          "mask": "0xffffffff",
+          "reference": "0xe5952018"
+        },
+        {
+          "value": "0xe2820001",
+          "mask": "0xffffffff",
+          "reference": "0xe2820001"
+        },
+        {
+          "value": "0xe5850018",
+          "mask": "0xffffffff",
+          "reference": "0xe5850018"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb021216"
+        },
+        {
+          "value": "0xe3a00000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a00000"
+        },
+        {
+          "value": "0xe8bd8038",
+          "mask": "0xffffffff",
+          "reference": "0xe8bd8038"
+        },
+        {
+          "value": "0xe1a00005",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00005"
+        },
+        {
+          "value": "0xe5b04024",
+          "mask": "0xffffffff",
+          "reference": "0xe5b04024"
+        },
+        {
+          "value": "0xe2431001",
+          "mask": "0xffffffff",
+          "reference": "0xe2431001"
+        },
+        {
+          "value": "0xe5851020",
+          "mask": "0xffffffff",
+          "reference": "0xe5851020"
+        },
+        {
+          "value": "0xe1a01004",
+          "mask": "0xffffffff",
+          "reference": "0xe1a01004"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xebffeec9"
+        }
+      ]
+    },
+    {
+      "id": "allocate_fsnode",
+      "name": "relfs_allocate_fsnode",
+      "reference_address": "0x104cc054",
+      "words": [
+        {
+          "value": "0xe92d4800",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4800"
+        },
+        {
+          "value": "0xe28db004",
+          "mask": "0xffffffff",
+          "reference": "0xe28db004"
+        },
+        {
+          "value": "0xe24dd038",
+          "mask": "0xffffffff",
+          "reference": "0xe24dd038"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b1034",
+          "mask": "0xffffffff",
+          "reference": "0xe50b1034"
+        },
+        {
+          "value": "0xe50b2038",
+          "mask": "0xffffffff",
+          "reference": "0xe50b2038"
+        },
+        {
+          "value": "0xe14b32be",
+          "mask": "0xffffffff",
+          "reference": "0xe14b32be"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb000b3c"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b301c",
+          "mask": "0xffffffff",
+          "reference": "0xe50b301c"
+        },
+        {
+          "value": "0xe51b301c",
+          "mask": "0xffffffff",
+          "reference": "0xe51b301c"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000073"
+        },
+        {
+          "value": "0xe51b3038",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3038"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000002"
+        },
+        {
+          "value": "0xe51f3000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f31d8"
+        },
+        {
+          "value": "0xe50b301c",
+          "mask": "0xffffffff",
+          "reference": "0xe50b301c"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xea000070"
+        },
+        {
+          "value": "0xe51b3034",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3034"
+        }
+      ]
+    },
+    {
+      "id": "deallocate_fsnode",
+      "name": "relfs_deallocate_fsnode",
+      "reference_address": "0x104cc280",
+      "words": [
+        {
+          "value": "0xe92d4800",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4800"
+        },
+        {
+          "value": "0xe28db004",
+          "mask": "0xffffffff",
+          "reference": "0xe28db004"
+        },
+        {
+          "value": "0xe24dd010",
+          "mask": "0xffffffff",
+          "reference": "0xe24dd010"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b1014",
+          "mask": "0xffffffff",
+          "reference": "0xe50b1014"
+        },
+        {
+          "value": "0xe14b30be",
+          "mask": "0xffffffff",
+          "reference": "0xe14b30be"
+        },
+        {
+          "value": "0xe3a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a03000"
+        },
+        {
+          "value": "0xe50b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3008"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb000ab0"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3008"
+        },
+        {
+          "value": "0xe51b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3008"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000005"
+        },
+        {
+          "value": "0xe51b3014",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3014"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x0a000000",
+          "mask": "0xff000000",
+          "reference": "0x0a000003"
+        },
+        {
+          "value": "0xe51b0014",
+          "mask": "0xffffffff",
+          "reference": "0xe51b0014"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xebfff509"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xea000000"
+        },
+        {
+          "value": "0xe1a00000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00000"
+        },
+        {
+          "value": "0xe51b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3008"
+        },
+        {
+          "value": "0xe1a00003",
+          "mask": "0xffffffff",
+          "reference": "0xe1a00003"
+        },
+        {
+          "value": "0xe24bd004",
+          "mask": "0xffffffff",
+          "reference": "0xe24bd004"
+        },
+        {
+          "value": "0xe8bd8800",
+          "mask": "0xffffffff",
+          "reference": "0xe8bd8800"
+        }
+      ]
+    },
+    {
+      "id": "fsnode_to_string",
+      "name": "relfs_fsnode_to_string",
+      "reference_address": "0x104cc2e4",
+      "words": [
+        {
+          "value": "0xe92d4800",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4800"
+        },
+        {
+          "value": "0xe28db004",
+          "mask": "0xffffffff",
+          "reference": "0xe28db004"
+        },
+        {
+          "value": "0xe24dd028",
+          "mask": "0xffffffff",
+          "reference": "0xe24dd028"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b1024",
+          "mask": "0xffffffff",
+          "reference": "0xe50b1024"
+        },
+        {
+          "value": "0xe50b2028",
+          "mask": "0xffffffff",
+          "reference": "0xe50b2028"
+        },
+        {
+          "value": "0xe14b31be",
+          "mask": "0xffffffff",
+          "reference": "0xe14b31be"
+        },
+        {
+          "value": "0xe3a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe3a03000"
+        },
+        {
+          "value": "0xe50b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3010"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb000a96"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3010"
+        },
+        {
+          "value": "0xe51b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3010"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000033"
+        },
+        {
+          "value": "0xe51b3028",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3028"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000002"
+        },
+        {
+          "value": "0xe51f3000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f30d8"
+        },
+        {
+          "value": "0xe50b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3010"
+        }
+      ]
+    },
+    {
+      "id": "rename",
+      "name": "relfs_rename",
+      "reference_address": "0x104cadb8",
+      "words": [
+        {
+          "value": "0xe92d4800",
+          "mask": "0xffffffff",
+          "reference": "0xe92d4800"
+        },
+        {
+          "value": "0xe28db004",
+          "mask": "0xffffffff",
+          "reference": "0xe28db004"
+        },
+        {
+          "value": "0xe24dd010",
+          "mask": "0xffffffff",
+          "reference": "0xe24dd010"
+        },
+        {
+          "value": "0xe50b0010",
+          "mask": "0xffffffff",
+          "reference": "0xe50b0010"
+        },
+        {
+          "value": "0xe50b1014",
+          "mask": "0xffffffff",
+          "reference": "0xe50b1014"
+        },
+        {
+          "value": "0xeb000000",
+          "mask": "0xff000000",
+          "reference": "0xeb000fe5"
+        },
+        {
+          "value": "0xe1a03000",
+          "mask": "0xffffffff",
+          "reference": "0xe1a03000"
+        },
+        {
+          "value": "0xe50b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3008"
+        },
+        {
+          "value": "0xe51b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3008"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a00003a"
+        },
+        {
+          "value": "0xe51b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3010"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000002"
+        },
+        {
+          "value": "0xe51f3000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f30ec"
+        },
+        {
+          "value": "0xe50b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3008"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xea000035"
+        },
+        {
+          "value": "0xe51b3014",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3014"
+        },
+        {
+          "value": "0xe3530000",
+          "mask": "0xffffffff",
+          "reference": "0xe3530000"
+        },
+        {
+          "value": "0x1a000000",
+          "mask": "0xff000000",
+          "reference": "0x1a000002"
+        },
+        {
+          "value": "0xe51f3000",
+          "mask": "0xff7ff000",
+          "reference": "0xe59f30d8"
+        },
+        {
+          "value": "0xe50b3008",
+          "mask": "0xffffffff",
+          "reference": "0xe50b3008"
+        },
+        {
+          "value": "0xea000000",
+          "mask": "0xff000000",
+          "reference": "0xea00002f"
+        },
+        {
+          "value": "0xe51b3010",
+          "mask": "0xffffffff",
+          "reference": "0xe51b3010"
+        }
+      ]
+    }
+  ]
+}

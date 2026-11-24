@@ -1,0 +1,545 @@
+usb-storage hook scan, format 1
+os_id = 46
+os = CX II 6.2.0.333 CAS
+scan = [0x10300000, 0x10500000)
+Reference signatures: CX II 6.2.0.333 NCAS
+Reference SHA256: 3b0bc1af94b845574de9e987fd6ac77bd7f4c6afa183cb2b1bbba54b4f4a017d
+Candidates are not ABI verification. No candidate code was executed.
+Matching rule: (ARM LE instruction & mask) == value, 4-byte aligned.
+Masks ignore branch destinations and literal-load displacements.
+Run after a reboot, before installing usb-storage or other hooks.
+
+HOOK pc_findmount [UNIQUE] count=1
+reference_address = 0x10499c38
+pattern value/mask:
+  +0x00: e3500000/ffffffff
+  +0x04: e92d4038/ffffffff
+  +0x08: 1a000000/ff000000
+  +0x0c: e3a00000/ffffffff
+  +0x10: e8bd8038/ffffffff
+  +0x14: e3a01001/ffffffff
+  +0x18: eb000000/ff000000
+  +0x1c: e1a04800/ffffffff
+  +0x20: e1a04844/ffffffff
+  +0x24: e3740001/ffffffff
+  +0x28: 0a000000/ff000000
+  +0x2c: e51f5000/ff7ff000
+  +0x30: e3a03000/ffffffff
+  +0x34: e1a02005/ffffffff
+  +0x38: ea000000/ff000000
+  +0x3c: e591e00c/ffffffff
+  +0x40: e1a0382c/ffffffff
+  +0x44: e31e0001/ffffffff
+  +0x48: 0a000000/ff000000
+  +0x4c: e1d1c1f4/ffffffff
+  +0x50: e15c0004/ffffffff
+  +0x54: 0a000000/ff000000
+  +0x58: e2832001/ffffffff
+  +0x5c: e1a00802/ffffffff
+candidate = 0x1049ac38
+  actual +0x00: e3500000
+  actual +0x04: e92d4038
+  actual +0x08: 1a000001
+  actual +0x0c: e3a00000
+  actual +0x10: e8bd8038
+  actual +0x14: e3a01001
+  actual +0x18: ebffffdd
+  actual +0x1c: e1a04800
+  actual +0x20: e1a04844
+  actual +0x24: e3740001
+  actual +0x28: 0afffff7
+  actual +0x2c: e59f506c
+  actual +0x30: e3a03000
+  actual +0x34: e1a02005
+  actual +0x38: ea00000c
+  actual +0x3c: e591e00c
+  actual +0x40: e1a0382c
+  actual +0x44: e31e0001
+  actual +0x48: 0a000002
+  actual +0x4c: e1d1c1f4
+  actual +0x50: e15c0004
+  actual +0x54: 0a00000e
+  actual +0x58: e2832001
+  actual +0x5c: e1a00802
+
+HOOK pc_parsedrive [UNIQUE] count=1
+reference_address = 0x10499bcc
+pattern value/mask:
+  +0x00: e3500000/ffffffff
+  +0x04: 0a000000/ff000000
+  +0x08: e5d03000/ffffffff
+  +0x0c: e3530000/ffffffff
+  +0x10: 0a000000/ff000000
+  +0x14: e5d02001/ffffffff
+  +0x18: e352003a/ffffffff
+  +0x1c: 1a000000/ff000000
+  +0x20: e2430041/ffffffff
+  +0x24: e200c0ff/ffffffff
+  +0x28: e35c0019/ffffffff
+  +0x2c: e2433061/ffffffff
+  +0x30: 91a00800/ffffffff
+  +0x34: e20310ff/ffffffff
+  +0x38: 851f0000/ff7ff000
+  +0x3c: 91a00820/ffffffff
+  +0x40: e3510019/ffffffff
+  +0x44: 91a03803/ffffffff
+  +0x48: 91a00823/ffffffff
+  +0x4c: e1a00800/ffffffff
+  +0x50: e1a00840/ffffffff
+  +0x54: e12fff1e/ffffffff
+  +0x58: e3510001/ffffffff
+  +0x5c: 151f0000/ff7ff000
+  +0x60: 1a000000/ff000000
+  +0x64: ea000000/ff000000
+candidate = 0x1049abcc
+  actual +0x00: e3500000
+  actual +0x04: 0a000013
+  actual +0x08: e5d03000
+  actual +0x0c: e3530000
+  actual +0x10: 0a000010
+  actual +0x14: e5d02001
+  actual +0x18: e352003a
+  actual +0x1c: 1a00000d
+  actual +0x20: e2430041
+  actual +0x24: e200c0ff
+  actual +0x28: e35c0019
+  actual +0x2c: e2433061
+  actual +0x30: 91a00800
+  actual +0x34: e20310ff
+  actual +0x38: 859f0028
+  actual +0x3c: 91a00820
+  actual +0x40: e3510019
+  actual +0x44: 91a03803
+  actual +0x48: 91a00823
+  actual +0x4c: e1a00800
+  actual +0x50: e1a00840
+  actual +0x54: e12fff1e
+  actual +0x58: e3510001
+  actual +0x5c: 159f0004
+  actual +0x60: 1afffff9
+  actual +0x64: eaffefae
+
+HOOK SMC_Create_Semaphore [UNIQUE] count=1
+reference_address = 0x103a690c
+pattern value/mask:
+  +0x00: e92d40f8/ffffffff
+  +0x04: e1a04000/ffffffff
+  +0x08: e1a05001/ffffffff
+  +0x0c: e1a06002/ffffffff
+  +0x10: e1a07003/ffffffff
+  +0x14: eb000000/ff000000
+  +0x18: e3a01000/ffffffff
+  +0x1c: e584100c/ffffffff
+  +0x20: e5d5c000/ffffffff
+  +0x24: e3570006/ffffffff
+  +0x28: e5c4c010/ffffffff
+  +0x2c: e5d50001/ffffffff
+  +0x30: 03a01001/ffffffff
+  +0x34: e5c40011/ffffffff
+  +0x38: e5d53002/ffffffff
+  +0x3c: e5c43012/ffffffff
+  +0x40: e5d52003/ffffffff
+  +0x44: e5c42013/ffffffff
+  +0x48: e5d5c004/ffffffff
+  +0x4c: e5c4c014/ffffffff
+  +0x50: e5d50005/ffffffff
+  +0x54: e5c40015/ffffffff
+  +0x58: e5d53006/ffffffff
+  +0x5c: e51f0000/ff7ff000
+candidate = 0x103a7914
+  actual +0x00: e92d40f8
+  actual +0x04: e1a04000
+  actual +0x08: e1a05001
+  actual +0x0c: e1a06002
+  actual +0x10: e1a07003
+  actual +0x14: eb021154
+  actual +0x18: e3a01000
+  actual +0x1c: e584100c
+  actual +0x20: e5d5c000
+  actual +0x24: e3570006
+  actual +0x28: e5c4c010
+  actual +0x2c: e5d50001
+  actual +0x30: 03a01001
+  actual +0x34: e5c40011
+  actual +0x38: e5d53002
+  actual +0x3c: e5c43012
+  actual +0x40: e5d52003
+  actual +0x44: e5c42013
+  actual +0x48: e5d5c004
+  actual +0x4c: e5c4c014
+  actual +0x50: e5d50005
+  actual +0x54: e5c40015
+  actual +0x58: e5d53006
+  actual +0x5c: e59f005c
+
+HOOK SMC_Obtain_Semaphore [UNIQUE] count=1
+reference_address = 0x103a69dc
+pattern value/mask:
+  +0x00: e92d40f0/ffffffff
+  +0x04: e24dd024/ffffffff
+  +0x08: e1a05000/ffffffff
+  +0x0c: e1a04001/ffffffff
+  +0x10: eb000000/ff000000
+  +0x14: e51f0000/ff7ff000
+  +0x18: eb000000/ff000000
+  +0x1c: e5953018/ffffffff
+  +0x20: e3530000/ffffffff
+  +0x24: 12433001/ffffffff
+  +0x28: 15853018/ffffffff
+  +0x2c: 13a04000/ffffffff
+  +0x30: 0a000000/ff000000
+  +0x34: eb000000/ff000000
+  +0x38: e1a00004/ffffffff
+  +0x3c: e28dd024/ffffffff
+  +0x40: e8bd80f0/ffffffff
+  +0x44: e3540000/ffffffff
+  +0x48: 03e04032/ffffffff
+  +0x4c: 0a000000/ff000000
+candidate = 0x103a79e4
+  actual +0x00: e92d40f0
+  actual +0x04: e24dd024
+  actual +0x08: e1a05000
+  actual +0x0c: e1a04001
+  actual +0x10: eb021121
+  actual +0x14: e59f00b0
+  actual +0x18: eb0211ad
+  actual +0x1c: e5953018
+  actual +0x20: e3530000
+  actual +0x24: 12433001
+  actual +0x28: 15853018
+  actual +0x2c: 13a04000
+  actual +0x30: 0a000003
+  actual +0x34: eb0211c0
+  actual +0x38: e1a00004
+  actual +0x3c: e28dd024
+  actual +0x40: e8bd80f0
+  actual +0x44: e3540000
+  actual +0x48: 03e04032
+  actual +0x4c: 0afffff8
+
+HOOK SMC_Release_Semaphore [UNIQUE] count=1
+reference_address = 0x103a6894
+pattern value/mask:
+  +0x00: e92d4038/ffffffff
+  +0x04: e1a05000/ffffffff
+  +0x08: eb000000/ff000000
+  +0x0c: e51f0000/ff7ff000
+  +0x10: eb000000/ff000000
+  +0x14: e5953020/ffffffff
+  +0x18: e3530000/ffffffff
+  +0x1c: 1a000000/ff000000
+  +0x20: e5952018/ffffffff
+  +0x24: e2820001/ffffffff
+  +0x28: e5850018/ffffffff
+  +0x2c: eb000000/ff000000
+  +0x30: e3a00000/ffffffff
+  +0x34: e8bd8038/ffffffff
+  +0x38: e1a00005/ffffffff
+  +0x3c: e5b04024/ffffffff
+  +0x40: e2431001/ffffffff
+  +0x44: e5851020/ffffffff
+  +0x48: e1a01004/ffffffff
+  +0x4c: eb000000/ff000000
+candidate = 0x103a789c
+  actual +0x00: e92d4038
+  actual +0x04: e1a05000
+  actual +0x08: eb021175
+  actual +0x0c: e59f0060
+  actual +0x10: eb021201
+  actual +0x14: e5953020
+  actual +0x18: e3530000
+  actual +0x1c: 1a000005
+  actual +0x20: e5952018
+  actual +0x24: e2820001
+  actual +0x28: e5850018
+  actual +0x2c: eb021214
+  actual +0x30: e3a00000
+  actual +0x34: e8bd8038
+  actual +0x38: e1a00005
+  actual +0x3c: e5b04024
+  actual +0x40: e2431001
+  actual +0x44: e5851020
+  actual +0x48: e1a01004
+  actual +0x4c: ebffeec9
+
+HOOK relfs_allocate_fsnode [UNIQUE] count=1
+reference_address = 0x104cc054
+pattern value/mask:
+  +0x00: e92d4800/ffffffff
+  +0x04: e28db004/ffffffff
+  +0x08: e24dd038/ffffffff
+  +0x0c: e1a03000/ffffffff
+  +0x10: e50b1034/ffffffff
+  +0x14: e50b2038/ffffffff
+  +0x18: e14b32be/ffffffff
+  +0x1c: eb000000/ff000000
+  +0x20: e1a03000/ffffffff
+  +0x24: e50b301c/ffffffff
+  +0x28: e51b301c/ffffffff
+  +0x2c: e3530000/ffffffff
+  +0x30: 1a000000/ff000000
+  +0x34: e51b3038/ffffffff
+  +0x38: e3530000/ffffffff
+  +0x3c: 1a000000/ff000000
+  +0x40: e51f3000/ff7ff000
+  +0x44: e50b301c/ffffffff
+  +0x48: ea000000/ff000000
+  +0x4c: e51b3034/ffffffff
+candidate = 0x104cd054
+  actual +0x00: e92d4800
+  actual +0x04: e28db004
+  actual +0x08: e24dd038
+  actual +0x0c: e1a03000
+  actual +0x10: e50b1034
+  actual +0x14: e50b2038
+  actual +0x18: e14b32be
+  actual +0x1c: eb000b3c
+  actual +0x20: e1a03000
+  actual +0x24: e50b301c
+  actual +0x28: e51b301c
+  actual +0x2c: e3530000
+  actual +0x30: 1a000073
+  actual +0x34: e51b3038
+  actual +0x38: e3530000
+  actual +0x3c: 1a000002
+  actual +0x40: e59f31d8
+  actual +0x44: e50b301c
+  actual +0x48: ea000070
+  actual +0x4c: e51b3034
+
+HOOK relfs_deallocate_fsnode [UNIQUE] count=1
+reference_address = 0x104cc280
+pattern value/mask:
+  +0x00: e92d4800/ffffffff
+  +0x04: e28db004/ffffffff
+  +0x08: e24dd010/ffffffff
+  +0x0c: e1a03000/ffffffff
+  +0x10: e50b1014/ffffffff
+  +0x14: e14b30be/ffffffff
+  +0x18: e3a03000/ffffffff
+  +0x1c: e50b3008/ffffffff
+  +0x20: eb000000/ff000000
+  +0x24: e1a03000/ffffffff
+  +0x28: e50b3008/ffffffff
+  +0x2c: e51b3008/ffffffff
+  +0x30: e3530000/ffffffff
+  +0x34: 1a000000/ff000000
+  +0x38: e51b3014/ffffffff
+  +0x3c: e3530000/ffffffff
+  +0x40: 0a000000/ff000000
+  +0x44: e51b0014/ffffffff
+  +0x48: eb000000/ff000000
+  +0x4c: ea000000/ff000000
+  +0x50: e1a00000/ffffffff
+  +0x54: e51b3008/ffffffff
+  +0x58: e1a00003/ffffffff
+  +0x5c: e24bd004/ffffffff
+  +0x60: e8bd8800/ffffffff
+candidate = 0x104cd280
+  actual +0x00: e92d4800
+  actual +0x04: e28db004
+  actual +0x08: e24dd010
+  actual +0x0c: e1a03000
+  actual +0x10: e50b1014
+  actual +0x14: e14b30be
+  actual +0x18: e3a03000
+  actual +0x1c: e50b3008
+  actual +0x20: eb000ab0
+  actual +0x24: e1a03000
+  actual +0x28: e50b3008
+  actual +0x2c: e51b3008
+  actual +0x30: e3530000
+  actual +0x34: 1a000005
+  actual +0x38: e51b3014
+  actual +0x3c: e3530000
+  actual +0x40: 0a000003
+  actual +0x44: e51b0014
+  actual +0x48: ebfff509
+  actual +0x4c: ea000000
+  actual +0x50: e1a00000
+  actual +0x54: e51b3008
+  actual +0x58: e1a00003
+  actual +0x5c: e24bd004
+  actual +0x60: e8bd8800
+
+HOOK relfs_fsnode_to_string [UNIQUE] count=1
+reference_address = 0x104cc2e4
+pattern value/mask:
+  +0x00: e92d4800/ffffffff
+  +0x04: e28db004/ffffffff
+  +0x08: e24dd028/ffffffff
+  +0x0c: e1a03000/ffffffff
+  +0x10: e50b1024/ffffffff
+  +0x14: e50b2028/ffffffff
+  +0x18: e14b31be/ffffffff
+  +0x1c: e3a03000/ffffffff
+  +0x20: e50b3010/ffffffff
+  +0x24: eb000000/ff000000
+  +0x28: e1a03000/ffffffff
+  +0x2c: e50b3010/ffffffff
+  +0x30: e51b3010/ffffffff
+  +0x34: e3530000/ffffffff
+  +0x38: 1a000000/ff000000
+  +0x3c: e51b3028/ffffffff
+  +0x40: e3530000/ffffffff
+  +0x44: 1a000000/ff000000
+  +0x48: e51f3000/ff7ff000
+  +0x4c: e50b3010/ffffffff
+candidate = 0x104cd2e4
+  actual +0x00: e92d4800
+  actual +0x04: e28db004
+  actual +0x08: e24dd028
+  actual +0x0c: e1a03000
+  actual +0x10: e50b1024
+  actual +0x14: e50b2028
+  actual +0x18: e14b31be
+  actual +0x1c: e3a03000
+  actual +0x20: e50b3010
+  actual +0x24: eb000a96
+  actual +0x28: e1a03000
+  actual +0x2c: e50b3010
+  actual +0x30: e51b3010
+  actual +0x34: e3530000
+  actual +0x38: 1a000033
+  actual +0x3c: e51b3028
+  actual +0x40: e3530000
+  actual +0x44: 1a000002
+  actual +0x48: e59f30d8
+  actual +0x4c: e50b3010
+
+HOOK relfs_rename [AMBIGUOUS] count=2
+reference_address = 0x104cadb8
+pattern value/mask:
+  +0x00: e92d4800/ffffffff
+  +0x04: e28db004/ffffffff
+  +0x08: e24dd010/ffffffff
+  +0x0c: e50b0010/ffffffff
+  +0x10: e50b1014/ffffffff
+  +0x14: eb000000/ff000000
+  +0x18: e1a03000/ffffffff
+  +0x1c: e50b3008/ffffffff
+  +0x20: e51b3008/ffffffff
+  +0x24: e3530000/ffffffff
+  +0x28: 1a000000/ff000000
+  +0x2c: e51b3010/ffffffff
+  +0x30: e3530000/ffffffff
+  +0x34: 1a000000/ff000000
+  +0x38: e51f3000/ff7ff000
+  +0x3c: e50b3008/ffffffff
+  +0x40: ea000000/ff000000
+  +0x44: e51b3014/ffffffff
+  +0x48: e3530000/ffffffff
+  +0x4c: 1a000000/ff000000
+  +0x50: e51f3000/ff7ff000
+  +0x54: e50b3008/ffffffff
+  +0x58: ea000000/ff000000
+  +0x5c: e51b3010/ffffffff
+candidate = 0x104cbc5c
+  actual +0x00: e92d4800
+  actual +0x04: e28db004
+  actual +0x08: e24dd010
+  actual +0x0c: e50b0010
+  actual +0x10: e50b1014
+  actual +0x14: eb00103c
+  actual +0x18: e1a03000
+  actual +0x1c: e50b3008
+  actual +0x20: e51b3008
+  actual +0x24: e3530000
+  actual +0x28: 1a000042
+  actual +0x2c: e51b3010
+  actual +0x30: e3530000
+  actual +0x34: 1a000002
+  actual +0x38: e59f310c
+  actual +0x3c: e50b3008
+  actual +0x40: ea00003d
+  actual +0x44: e51b3014
+  actual +0x48: e3530000
+  actual +0x4c: 1a000002
+  actual +0x50: e59f30f8
+  actual +0x54: e50b3008
+  actual +0x58: ea000037
+  actual +0x5c: e51b3010
+candidate = 0x104cbdb8
+  actual +0x00: e92d4800
+  actual +0x04: e28db004
+  actual +0x08: e24dd010
+  actual +0x0c: e50b0010
+  actual +0x10: e50b1014
+  actual +0x14: eb000fe5
+  actual +0x18: e1a03000
+  actual +0x1c: e50b3008
+  actual +0x20: e51b3008
+  actual +0x24: e3530000
+  actual +0x28: 1a00003a
+  actual +0x2c: e51b3010
+  actual +0x30: e3530000
+  actual +0x34: 1a000002
+  actual +0x38: e59f30ec
+  actual +0x3c: e50b3008
+  actual +0x40: ea000035
+  actual +0x44: e51b3014
+  actual +0x48: e3530000
+  actual +0x4c: 1a000002
+  actual +0x50: e59f30d8
+  actual +0x54: e50b3008
+  actual +0x58: ea00002f
+  actual +0x5c: e51b3010
+
+RELATIONSHIPS (reference instruction/structure layout only)
+findmount BL +0x18 -> parsedrive 0x1049abcc
+parsedrive relation matches scan: yes
+findmount literal 0x1049acd8 -> mount table 0x114cbfd8
+A mount 0x114cbfd8, drive 1, ops 0x114cba9c
+  ops[00] = 0x104ca854
+  ops[01] = 0x104ca93c
+  ops[02] = 0x104ca9e0
+  ops[03] = 0x104caaac
+  ops[04] = 0x104cb00c
+  ops[05] = 0x104cb158
+  ops[06] = 0x104cb374
+  ops[07] = 0x104cb634
+  ops[08] = 0x104cbb40
+  ops[09] = 0x104cc344
+  ops[10] = 0x104ccc9c
+  ops[11] = 0x104ccb0c
+  ops[12] = 0x104cc984
+  ops[13] = 0x104cb864
+  ops[14] = 0x104cba3c
+  ops[15] = 0x104cbef4
+  ops[16] = 0x104cc0bc
+  ops[17] = 0x104cbdb8
+  ops[18] = 0x104cc3f8
+  ops[19] = 0x104cc664
+  ops[20] = 0x104cc810
+  ops[21] = 0x104cac70
+  ops[22] = 0x104cab2c
+  ops[23] = 0x104cadec
+  ops[24] = 0x104cd054
+  ops[25] = 0x104cd280
+  ops[26] = 0x104cd2e4
+  ops[27] = 0x00000000
+  ops[28] = 0x00000000
+  relfs_allocate_fsnode relation matches scan: yes
+  relfs_deallocate_fsnode relation matches scan: yes
+  relfs_fsnode_to_string relation matches scan: yes
+  relfs_rename relation matches scan: yes
+
+PROFILE CANDIDATES -- merge into os_profiles.c only after review
+{
+    .os_id = 46,
+    .name = "CX II 6.2.0.333 CAS",
+    .reviewed = 0,
+    .abi = USB_OS_ABI_UNREVIEWED,
+    .hooks = {
+        [USB_HOOK_FINDMOUNT] = 0x1049ac38, /* 1 matches */
+        [USB_HOOK_PARSEDRIVE] = 0x1049abcc, /* 1 matches */
+        [USB_HOOK_SEMAPHORE_CREATE] = 0x103a7914, /* 1 matches */
+        [USB_HOOK_SEMAPHORE_OBTAIN] = 0x103a79e4, /* 1 matches */
+        [USB_HOOK_SEMAPHORE_RELEASE] = 0x103a789c, /* 1 matches */
+        [USB_HOOK_ALLOCATE_FSNODE] = 0x104cd054, /* 1 matches */
+        [USB_HOOK_DEALLOCATE_FSNODE] = 0x104cd280, /* 1 matches */
+        [USB_HOOK_FSNODE_TO_STRING] = 0x104cd2e4, /* 1 matches */
+        [USB_HOOK_RENAME] = 0x00000000, /* 2 matches */
+    }
+    /* Review USB offsets, callback signatures, DSTAT and mount layout. */
+}
