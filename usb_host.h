@@ -14,6 +14,11 @@ extern const struct usb_transport usb_host_transport;
 int usb_host_attach(struct usb_softc *sc);
 const char *usb_host_last_error(void);
 
+/* Remember what drive this is (capacity and a hash of sector 0), so that a
+ * reconnect can refuse a different drive. Call once after the first
+ * usb_storage_scsi_refresh_media(). Returns 0 on success. */
+int usb_host_remember_media(struct usb_softc *sc);
+
 /* Find a Bulk-Only (class 8, subclass 6, protocol 0x50) interface with a bulk-IN
  * and a bulk-OUT endpoint in a configuration descriptor block. Returns 1 and
  * fills the usb_host_dev fields when found, otherwise 0. Never reads past n bytes. */

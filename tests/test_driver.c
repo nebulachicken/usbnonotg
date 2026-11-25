@@ -1,5 +1,7 @@
 /* Host regression tests: in-memory USB disks, real vendored FatFs. */
 #include "fat.h"
+#include "otg_host.h"
+#include "usb_diag.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +9,19 @@
 static unsigned char image[2][256 * 512];
 static struct usb_softc devices[2];
 static int fail_io;
+
+/* Fake driver event log for usb_diag_flush(). */
+static char fake_log[64] = "first log";
+static bool fake_pending, fake_frozen;
+bool otg_log_pending(void) { return fake_pending; }
+void otg_log_clear_pending(void) { fake_pending = false; }
+void otg_log_freeze(bool frozen) { fake_frozen = frozen; }
+const char *otg_log_buffer(size_t *length)
+{
+    assert(fake_frozen); /* the log must be frozen while it is copied */
+    *length = strlen(fake_log);
+    return fake_log;
+}
 
 int os_integration_mount(struct fat_fs *fs)
 {
@@ -118,6 +133,44 @@ static void paths(void)
     assert(!usb_path_normalize("../../..", "A:/documents", out) && !strcmp(out, "A:/"));
 }
 
+/* usb_diag_flush(): only ever writes into a log file the user created. */
+static void diag_log(void)
+{
+    struct fat_fs *fs = fat_get_mounted_filesystems();
+    struct fat_stat st;
+    char data[64];
+    int fd;
+    /* no log file on the drive: nothing is written, and nothing is created */
+    fake_pending = true;
+    usb_diag_flush();
+    assert(!fake_pending && fat_stat_path(fs, "usb-storage-log.txt", &st) == NUF_NO_FILE);
+    /* the user creates it: the log goes in */
+    fd = fat_open_flags(fs, "usb-storage-log.txt", 1 | 0x100);
+    assert(fd > 0 && !fat_close(fd));
+    fake_pending = true;
+    usb_diag_flush();
+    assert(!fat_stat_path(fs, "usb-storage-log.txt", &st) && st.size == strlen("first log"));
+    fd = fat_open(fs, "usb-storage-log.txt");
+    assert(fd > 0 && fat_read(fd, data, sizeof(data)) == (int)strlen("first log"));
+    assert(!memcmp(data, "first log", 9) && !fat_close(fd));
+    /* nothing new happened: the file is left alone */
+    strcpy(fake_log, "second, longer log text");
+    usb_diag_flush();
+    assert(!fat_stat_path(fs, "usb-storage-log.txt", &st) && st.size == strlen("first log"));
+    /* a new event: the file is rewritten (and shrinks/grows as needed) */
+    fake_pending = true;
+    usb_diag_flush();
+    assert(!fat_stat_path(fs, "usb-storage-log.txt", &st) && st.size == strlen(fake_log));
+    /* a medium that is no longer valid is skipped without touching it */
+    devices[0].sc_media.valid = 0;
+    strcpy(fake_log, "third");
+    fake_pending = true;
+    usb_diag_flush();
+    devices[0].sc_media.valid = 1;
+    assert(!fat_stat_path(fs, "usb-storage-log.txt", &st) && st.size == strlen("second, longer log text"));
+    assert(!fat_unlink(fs, "usb-storage-log.txt"));
+}
+
 int main(void)
 {
     struct fat_fs *fs = fat_get_mounted_filesystems();
@@ -169,6 +222,7 @@ int main(void)
     assert(found);
     assert(!fat_rename(fs, "new.txt", "renamed.txt"));
     assert(!fat_stat_path(fs, "renamed.txt", &st) && st.size == 12);
+    diag_log();
     fixture(1, 1);
     assert(fat_scan_mbr(&devices[1]) == 1);
     assert(fs[0].sc == &devices[0] && fs[1].sc == &devices[1]);

@@ -68,10 +68,15 @@ TI-OS is the host, the driver registers with its USB stack, and hot-plug works.
 
 Differences from the OS-stack path:
 
-- **One session per boot.** The drive must be plugged in before launching, and
-  there is no hot-plug. If it is unplugged, or the session is lost, the volumes
-  become unavailable and 5 V is switched off at the next access. Mounting again
-  needs a reboot, because the filesystem hooks cannot be installed twice.
+- **The drive must be plugged in before launching**, and there is no hot-plug
+  detection. TI-OS can disturb an idle host session, so when a session is lost
+  or a transfer cannot be recovered, the driver redoes the bring-up on the next
+  access (5 V cycled, HNP, port reset, enumeration) and checks it is the *same*
+  drive (capacity and a hash of sector 0) before carrying on. A different drive
+  is refused, because the FAT state kept in RAM would corrupt it. A reconnect
+  takes a few seconds. After two failed attempts in a row the driver gives up,
+  switches 5 V off, and the volumes stay unavailable until a reboot (the
+  filesystem hooks cannot be installed twice).
 - **5 V stays on while mounted** (the calculator's battery feeds it). Use a
   self-powered drive. Do not connect a computer, charger or powered hub: the
   driver refuses to start if it sees VBUS, and an external supply on VBUS must
@@ -82,7 +87,7 @@ Differences from the OS-stack path:
   report ready (spinning disks).
 - TI-OS keeps running while the driver polls the controller (IRQ mode 2, as in
   `otgweb`); between transfers TI-OS may re-gate or re-mask the USB block, so
-  every transfer re-checks the session first and gives up cleanly if it is gone.
+  every transfer re-checks the session first and reconnects if it is gone.
   How TI-OS behaves toward an idle host session is the largest unknown.
 
 ## Source layout
@@ -161,10 +166,27 @@ The original supplied sources are preserved in `original-driver.zip`.
 `.toolchain/` contains ignored SDK/reference downloads from development; the
 driver's build only needs the vendored FatFs files and your normal SDK.
 
+### Diagnosing problems in forced host mode
+
+Two logs are available:
+
+- `usb-storage_log.txt.tns`, written next to the program at launch: the
+  bring-up (5 V, HNP, role switch, port reset, enumeration).
+- An **opt-in event log on the drive**: create an empty file named
+  `usb-storage-log.txt` in the root of the drive (from a PC). Whenever
+  something has happened since the last write (a lost session, a reconnect,
+  a failed transfer) the driver rewrites that file with its log. A "session
+  lost" entry includes the USB controller registers at that moment. The driver
+  never creates the file and never writes to a drive that does not have it.
+
+Please send both when reporting a problem.
+
 ## Forced-host source files
 
 - `otg_host.c/.h`: bring-up, session guard, polled control and bulk transfers.
-- `usb_host.c/.h`: enumeration, Bulk-Only interface search, host transport.
+- `usb_host.c/.h`: enumeration, Bulk-Only interface search, host transport,
+  reconnect and same-drive check.
+- `usb_diag.c/.h`: the opt-in event log on the drive.
 - `tests/test_host.c`: host tests with a fake Bulk-Only drive (descriptor
   parsing, toggle accounting, chunking, the real SCSI layer, session loss).
 

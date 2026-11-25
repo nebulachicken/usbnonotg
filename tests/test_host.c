@@ -19,6 +19,8 @@ static unsigned fake_speed = 2, cur_addr, cur_mps;
 static int configured, addressed, resets, halts_cleared;
 static unsigned bulk_calls, max_chunk_seen;
 static int not_ready_left; /* TEST UNIT READY answers NOT READY this many times */
+static int fail_control, fail_bulk_once; /* failure injection */
+static int open_calls, close_calls, open_fails_left; /* otg_host_open() behaviour */
 
 /* device-side data toggle state per endpoint (0x81 IN, 0x02 OUT) */
 static unsigned dev_toggle_in, dev_toggle_out;
@@ -43,6 +45,26 @@ static const uint8_t cfg_desc[] = {
 void otg_log(const char *f, ...) { (void)f; }
 size_t otg_log_dump(const char *p) { (void)p; return 0; }
 const char *otg_strerror(int c) { (void)c; return ""; }
+bool otg_in_op(void) { return op_depth > 0; }
+void otg_host_close(void)
+{
+    ++close_calls;
+    session_alive = 0;
+}
+int otg_host_open(void)
+{
+    ++open_calls;
+    if (open_fails_left > 0) {
+        --open_fails_left;
+        return OTG_E_NO_DEVICE;
+    }
+    /* a fresh bring-up: the drive was power-cycled and reset */
+    session_alive = 1;
+    addressed = configured = 0;
+    dev_toggle_in = dev_toggle_out = 0;
+    state = ST_IDLE;
+    return 0;
+}
 int otg_op_begin(void)
 {
     if (fail_next_op || !session_alive) {
@@ -72,6 +94,9 @@ int otg_control(uint8_t type, uint8_t req, uint16_t value, uint16_t index, const
 {
     (void)out;
     assert(op_depth > 0);
+    if (fail_control) {
+        return -1;
+    }
     if (type == 0x80 && req == 6 && (value >> 8) == 1) { /* device descriptor */
         uint8_t d[18] = {18, 1, 0, 2, 0, 0, 0, 64, 0x34, 0x12, 0x78, 0x56, 0, 1, 0, 0, 0, 1};
         unsigned n = length < 18 ? length : 18;
@@ -194,6 +219,10 @@ int otg_bulk_chunk(uint8_t ep, bool in, void *buf, unsigned len, unsigned mps, u
     (void)timeout_ms;
     assert(op_depth > 0 && len > 0 && len <= OTG_BULK_CHUNK && mps == 512);
     assert(ep == (in ? 0x81 : 0x02));
+    if (fail_bulk_once) {
+        fail_bulk_once = 0;
+        return OTG_XFER_TIMEOUT;
+    }
     ++bulk_calls;
     if (len > max_chunk_seen) {
         max_chunk_seen = len;
@@ -304,6 +333,7 @@ static void test_attach_and_scsi(void)
     assert(sc.tp == &usb_host_transport && sc.host.ep_in == 0x81 && sc.sc_ifaceno == 1);
 
     assert(usb_storage_scsi_refresh_media(&sc) == 0);
+    assert(usb_host_remember_media(&sc) == 0 && sc.host.media_known);
     assert(op_depth == 0);
     assert(sc.sc_media.valid && sc.sc_media.block_size == 512);
     assert(sc.sc_media.last_lba == SECTORS - 1);
@@ -335,15 +365,99 @@ static void test_attach_and_scsi(void)
     assert(op_depth == 0 && resets == 0);
 }
 
-static void test_session_loss(void)
+/* The session dies between commands (TI-OS got at the controller): the next
+ * command must re-establish it and carry on, without losing the medium. */
+static void test_reconnect_after_loss(void)
 {
     uint8_t buf[512];
-    /* the session dies between commands: the drive must end up detached */
+    int opens = open_calls;
     session_alive = 0;
+    assert(usb_storage_scsi_blocks(&sc, 7, 1, buf, 512, 0) == 0);
+    assert(open_calls == opens + 1);
+    assert(memcmp(buf, disk + 7 * 512, 512) == 0);
+    assert(!sc.sc_detached && sc.sc_media.valid && op_depth == 0);
+    assert(sc.host.failures == 0 && !sc.host.gave_up);
+    /* and it keeps working */
+    assert(usb_storage_scsi_blocks(&sc, 8, 1, buf, 512, 0) == 0);
+    assert(open_calls == opens + 1);
+    assert(toggle_errors == 0);
+}
+
+/* A transfer fails and the Bulk-Only reset fails too: the medium must stay
+ * valid, and the next command repairs the session. */
+static void test_failed_recovery_reconnects(void)
+{
+    uint8_t buf[512];
+    int opens = open_calls;
+    fail_bulk_once = 1;
+    fail_control = 1;
+    assert(usb_storage_scsi_blocks(&sc, 9, 1, buf, 512, 0) == -1); /* this command fails */
+    fail_control = 0;
+    assert(sc.sc_media.valid && !sc.sc_detached && sc.host.need_reconnect);
+    assert(usb_storage_scsi_blocks(&sc, 9, 1, buf, 512, 0) == 0); /* the next one works */
+    assert(open_calls == opens + 1);
+    assert(memcmp(buf, disk + 9 * 512, 512) == 0);
+    assert(!sc.host.need_reconnect && op_depth == 0 && toggle_errors == 0);
+}
+
+/* After a reconnect it is a different drive: refuse, and stay refused. */
+static void test_different_drive_is_refused(void)
+{
+    uint8_t buf[512], saved[512];
+    memcpy(saved, disk, 512);
+    session_alive = 0;
+    disk[0x1b8] ^= 0xff; /* another disk signature in the MBR */
     assert(usb_storage_scsi_blocks(&sc, 0, 1, buf, 512, 0) == -1);
-    assert(sc.sc_detached && !sc.sc_media.valid);
+    assert(sc.sc_detached && !sc.sc_media.valid && sc.host.gave_up);
+    memcpy(disk, saved, 512);
     session_alive = 1;
-    assert(usb_storage_scsi_blocks(&sc, 0, 1, buf, 512, 0) == -1); /* stays dead */
+    assert(usb_storage_scsi_blocks(&sc, 0, 1, buf, 512, 0) == -1); /* stays refused */
+    assert(op_depth == 0);
+}
+
+static void fresh_softc(struct usb_softc *s)
+{
+    session_alive = 1;
+    state = ST_IDLE;
+    addressed = configured = 0;
+    dev_toggle_in = dev_toggle_out = 0;
+    memset(s, 0, sizeof *s);
+    assert(usb_host_attach(s) == 0 && usb_storage_scsi_refresh_media(s) == 0);
+    assert(usb_host_remember_media(s) == 0 && s->host.media_known);
+}
+
+/* One failed bring-up must not be the end: the drive may simply not have been
+ * ready, or VBUS not yet have decayed. */
+static void test_transient_failure_recovers(void)
+{
+    uint8_t buf[512];
+    struct usb_softc s3;
+    fresh_softc(&s3);
+    session_alive = 0;
+    open_fails_left = 1;
+    assert(usb_storage_scsi_blocks(&s3, 0, 1, buf, 512, 0) == -1); /* this command fails ... */
+    assert(!s3.sc_detached && s3.sc_media.valid && !s3.host.gave_up);
+    assert(usb_storage_scsi_blocks(&s3, 0, 1, buf, 512, 0) == 0); /* ... the next one works */
+    assert(s3.host.failures == 0 && memcmp(buf, disk, 512) == 0);
+}
+
+/* Nothing answers: a bounded number of attempts, then fast failure. */
+static void test_gives_up_when_the_drive_is_gone(void)
+{
+    uint8_t buf[512];
+    struct usb_softc s3;
+    int opens;
+    fresh_softc(&s3);
+    session_alive = 0;
+    open_fails_left = 100;
+    opens = open_calls;
+    assert(usb_storage_scsi_blocks(&s3, 0, 1, buf, 512, 0) == -1);
+    assert(open_calls == opens + 1 && !s3.sc_detached); /* first attempt failed, may retry */
+    assert(usb_storage_scsi_blocks(&s3, 0, 1, buf, 512, 0) == -1);
+    assert(open_calls == opens + 2 && s3.sc_detached && s3.host.gave_up);
+    open_fails_left = 0;
+    assert(usb_storage_scsi_blocks(&s3, 0, 1, buf, 512, 0) == -1);
+    assert(open_calls == opens + 2); /* no more attempts */
     assert(op_depth == 0);
 }
 
@@ -369,8 +483,12 @@ int main(void)
     test_parse();
     test_packets();
     test_attach_and_scsi();
-    test_session_loss();
+    test_reconnect_after_loss();
+    test_failed_recovery_reconnects();
+    test_different_drive_is_refused();
+    test_transient_failure_recovers();
+    test_gives_up_when_the_drive_is_gone();
     test_not_a_drive();
-    puts("forced-host enumeration, chunked transport, toggles and SCSI layer tests passed");
+    puts("forced-host enumeration, transport, toggles, reconnect and SCSI layer tests passed");
     return 0;
 }

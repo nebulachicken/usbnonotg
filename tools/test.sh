@@ -3,7 +3,7 @@ set -eu
 cd "$(dirname "$0")/.."
 mkdir -p build
 cc -std=c11 -g -O1 -Wall -Wextra -Werror -fsanitize=address,undefined \
-    -Itests/include -I. -Ivendor/fatfs tests/test_driver.c namespace.c fat.c \
+    -Itests/include -I. -Ivendor/fatfs tests/test_driver.c namespace.c fat.c usb_diag.c \
     vendor/fatfs/ff.c vendor/fatfs/ffunicode.c -o build/test-driver
 ./build/test-driver
 cc -std=c11 -g -O1 -Wall -Wextra -Werror -fsanitize=address,undefined \

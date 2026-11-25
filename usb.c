@@ -194,6 +194,11 @@ static int start_forced(char *msg, size_t msg_size)
         otg_host_close();
         return -1;
     }
+    if (usb_host_remember_media(&forced_sc)) {
+        snprintf(msg, msg_size, "The drive's first sector could not be read.");
+        otg_host_close();
+        return -1;
+    }
     return 0;
 }
 
