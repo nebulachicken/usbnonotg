@@ -109,7 +109,8 @@ int usb_os_background_task_available(void)
     if (!profile || !profile->tcc_create_task ||
         !profile->tcc_create_task_mask[0] || !profile->tcc_create_task_mask[1] ||
         !profile->tcc_create_task_abi_verified ||
-        profile->tcc_task_tcb_size != sizeof(NU_TASK)) {
+        !profile->tcc_task_tcb_size ||
+        profile->tcc_task_tcb_size > USB_OS_TASK_TCB_STORAGE_MAX) {
         return 0;
     }
     if ((profile->tcc_create_task & 3u) || profile->scan_end < 8u ||

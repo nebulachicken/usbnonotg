@@ -14,8 +14,13 @@ int usb_os_semaphore_obtain(void *semaphore, unsigned timeout);
 int usb_os_semaphore_release(void *semaphore);
 
 /* Experimental Nucleus task support. It is disabled unless the active
- * OS profile contains a verified function address and code signature.
+ * OS profile contains a verified function address, code signature, ABI, and
+ * a TCB size that fits this opaque storage limit. NU_TASK is an opaque
+ * (void) type in the Ndless headers, so callers must not instantiate it.
+ * This is only a capacity limit; it does not assert the actual TCB layout.
  */
+#define USB_OS_TASK_TCB_STORAGE_MAX 1024u
+
 typedef void (*usb_os_task_entry)(unsigned argc, void *argv);
 int usb_os_background_task_available(void);
 int usb_os_task_create(void *tcb, char *name, usb_os_task_entry entry,

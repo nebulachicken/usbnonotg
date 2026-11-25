@@ -29,7 +29,13 @@
 #define USB_BACKGROUND_PRIORITY 255u
 #define USB_BACKGROUND_PERIOD_MS 250u
 
-static NU_TASK background_tcb;
+/* Ndless exposes NU_TASK as an opaque type (typedef void NU_TASK), not a
+ * concrete Nucleus TCB definition. Reserve aligned opaque storage instead.
+ * Task creation remains disabled unless a profile supplies a verified TCB
+ * size and ABI; os_runtime.c checks that the size fits this buffer limit.
+ */
+static uint8_t background_tcb_storage[USB_OS_TASK_TCB_STORAGE_MAX]
+    __attribute__((aligned(8)));
 static uint8_t background_stack[USB_BACKGROUND_STACK_SIZE] __attribute__((aligned(8)));
 static volatile int background_state;
 static char background_name[] = "USBKEEP";
@@ -83,11 +89,11 @@ int usb_background_start(void)
         return 1;
     }
 
-    memset(&background_tcb, 0, sizeof(background_tcb));
+    memset(background_tcb_storage, 0, sizeof(background_tcb_storage));
     memset(background_stack, 0, sizeof(background_stack));
     background_state = 1;
 
-    rc = usb_os_task_create(&background_tcb, background_name, background_task_entry,
+    rc = usb_os_task_create(background_tcb_storage, background_name, background_task_entry,
                             0, NULL, background_stack, sizeof(background_stack),
                             USB_BACKGROUND_PRIORITY, 0, NU_PREEMPT, NU_START);
     if (rc != 0) {
