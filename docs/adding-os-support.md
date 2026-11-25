@@ -21,13 +21,14 @@ The OS IDs below match the Ndless source's `ut_os_version_index` mapping in
 | 44 | CX II 6.2.0.333 NCAS | Addresses/ABI reviewed against supplied dump; hardware testing pending |
 | 45 | CX II-T 6.2.0.333 | Pending scanner report and ABI review |
 | 46 | CX II 6.2.0.333 CAS | Enabled with captured hooks and maintainer-confirmed shared core layouts; hardware testing pending |
-| 47 | CX II 6.4.0.74 NCAS | Pending scanner report and ABI review |
+| 47 | CX II 6.4.0.74 NCAS | Hook candidates captured; Nucleus/DSTAT/USB ABI review pending |
 | 48 | CX II-T 6.4.0.74 | Pending scanner report and ABI review |
 | 49 | CX II 6.4.0.74 CAS | Pending scanner report and ABI review |
 
 All six have named profile entries and can run the standalone scanner. Only ID
-44 and 46 are currently enabled for driver installation. The other addresses and
-USB offsets remain unset until reviewed.
+44 and 46 are currently enabled for driver installation. ID 47 now contains the
+nine hook candidates from `docs/os-6.4.0.74-ncas-scan.md`, but remains disabled:
+the scan does not establish the mount/DSTAT/semaphore ABI or USB-stack offsets.
 No uniform address delta is assumed.
 
 The CAS report is preserved in `tests/fixtures/usb-hooks-46-01.txt`. Eight

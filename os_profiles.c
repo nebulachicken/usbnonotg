@@ -92,10 +92,35 @@ const struct usb_os_profile usb_os_profiles[] = {
     {
         .os_id = 47,
         .name = "CX II 6.4.0.74 NCAS",
+        /* Candidate hooks captured from usb-hooks-47-00. The scanner confirms
+         * unique code-pattern matches and cross-links the live A: callback
+         * table, but it does not establish the full Nucleus/DSTAT/USB ABI.
+         * Keep this profile disabled until those layouts and callback
+         * contracts are independently reviewed.
+         */
         .reviewed = 0,
         .abi = USB_OS_ABI_UNREVIEWED,
         .scan_begin = 0x10300000,
         .scan_end = 0x10500000,
+        /* No verified TCC_Create_Task entry point/ABI for this image. */
+        .tcc_create_task = 0,
+        .tcc_create_task_sig = {0, 0},
+        .tcc_create_task_mask = {0, 0},
+        .tcc_create_task_abi_verified = 0,
+        .tcc_task_tcb_size = 0,
+        .hooks =
+            {
+                [USB_HOOK_FINDMOUNT] = 0x10499d00,
+                [USB_HOOK_PARSEDRIVE] = 0x10499c94,
+                [USB_HOOK_SEMAPHORE_CREATE] = 0x103a69bc,
+                [USB_HOOK_SEMAPHORE_OBTAIN] = 0x103a6a8c,
+                [USB_HOOK_SEMAPHORE_RELEASE] = 0x103a6944,
+                [USB_HOOK_ALLOCATE_FSNODE] = 0x104cc11c,
+                [USB_HOOK_DEALLOCATE_FSNODE] = 0x104cc348,
+                [USB_HOOK_FSNODE_TO_STRING] = 0x104cc3ac,
+                /* Two pattern hits; live A: ops[OP_RENAME] selects this one. */
+                [USB_HOOK_RENAME] = 0x104cae80,
+            },
     },
     {
         .os_id = 48,

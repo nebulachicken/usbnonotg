@@ -3,8 +3,9 @@
 Resident USB mass-storage driver with named profiles for **CX II 6.2.0.333 and
 6.4.0.74, NCAS/CAS/T**. Installation is enabled for **6.2.0.333 NCAS and CAS**.
 NCAS uses the supplied binary's addresses; CAS uses the captured on-device hook
-report and the maintainer-confirmed shared core layouts. USB hardware testing
-is pending. The other four profiles remain disabled pending hook discovery.
+report and the maintainer-confirmed shared core layouts. OS 6.4.0.74 NCAS now has
+nine hook candidates from an on-device scan, but remains disabled pending
+Nucleus/DSTAT/USB ABI review. USB hardware testing is pending for enabled profiles.
 
 The standalone [hook scanner](hookscan_program/README.md) finds and logs candidate
 addresses on all six variants. See [adding OS support](docs/adding-os-support.md)
@@ -100,7 +101,8 @@ Differences from the OS-stack path:
 - `usb_storage_scsi.c`: checked Bulk-Only Transport and SCSI block commands.
 - `bulk.c`: FOTG210 asynchronous-schedule transfer implementation.
 - `vendor/fatfs/`: vendored filesystem implementation and configuration.
-- `docs/os-6.2.0.333.md`: reverse-engineering evidence and hook contracts.
+- `docs/os-6.2.0.333.md`: OS 6.2 reverse-engineering evidence and hook contracts.
+- `docs/os-6.4.0.74-ncas-scan.md`: captured OS 6.4 NCAS scan and outstanding ABI checks.
 - `tests/test_driver.c`: host regression tests using in-memory disk images.
 - `usbtest_program/usbtest.c`: on-device tests using ordinary libc calls.
 
@@ -185,7 +187,7 @@ calculator is idle. It is serialized with FAT/SCSI operations using the same
 filesystem lock. It does not perform transfers, re-enumerate a disconnected
 device, or reapply VBUS power after a session has been lost.
 
-**This worker is disabled for the supplied CX II OS 6.2.0.333 profiles.**
+**This worker is disabled for all supplied CX II OS profiles, including the newly scanned 6.4.0.74 NCAS profile.**
 `nl_set_resident()` only preserves the executable's memory after exit; it does
 not schedule code. Hackspire's published Ndless syscall list does not expose
 Nucleus task creation, and the community-documented `TCC_Create_Task` entry is

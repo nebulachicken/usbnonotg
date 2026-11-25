@@ -76,6 +76,22 @@ int main(void)
         assert(profile->tcc_create_task_abi_verified == 0);
         assert(profile->tcc_task_tcb_size == 0);
     }
+    {
+        const struct usb_os_profile *profile = usb_os_profile_find(47);
+        assert(profile != NULL);
+        assert(profile->reviewed == 0);
+        assert(profile->abi == USB_OS_ABI_UNREVIEWED);
+        assert(profile->hooks[USB_HOOK_FINDMOUNT] == 0x10499d00);
+        assert(profile->hooks[USB_HOOK_PARSEDRIVE] == 0x10499c94);
+        assert(profile->hooks[USB_HOOK_SEMAPHORE_CREATE] == 0x103a69bc);
+        assert(profile->hooks[USB_HOOK_SEMAPHORE_OBTAIN] == 0x103a6a8c);
+        assert(profile->hooks[USB_HOOK_SEMAPHORE_RELEASE] == 0x103a6944);
+        assert(profile->hooks[USB_HOOK_ALLOCATE_FSNODE] == 0x104cc11c);
+        assert(profile->hooks[USB_HOOK_DEALLOCATE_FSNODE] == 0x104cc348);
+        assert(profile->hooks[USB_HOOK_FSNODE_TO_STRING] == 0x104cc3ac);
+        assert(profile->hooks[USB_HOOK_RENAME] == 0x104cae80);
+        assert(profile->usb.high_speed_value == 0);
+    }
 
     puts("hook pattern bounds, block overlap, ambiguity, decoders and OS profiles passed");
     return 0;
