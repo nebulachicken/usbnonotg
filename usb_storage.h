@@ -13,10 +13,8 @@ struct usb_softc;
  * adapter) and the forced-host path (passive adapter, see otg_host.h) each
  * provide one; the SCSI layer does not care which. */
 struct usb_transport {
-    /* Bracket every SCSI command; both may be NULL. enter() returns 0 to
-     * proceed, a positive value when only this command has to fail (the device
-     * may come back), or a negative value when the device is gone for good (it
-     * is then detached). */
+    /* Bracket every SCSI command. enter() returns nonzero when the device is
+     * gone. Both may be NULL. */
     int (*enter)(struct usb_softc *sc);
     void (*leave)(struct usb_softc *sc);
     /* Move len bytes on the bulk-IN (in != 0) or bulk-OUT endpoint. Returns the
@@ -39,16 +37,6 @@ struct usb_host_dev {
     uint16_t mps_out;
     uint8_t toggle_in;
     uint8_t toggle_out;
-    /* Reconnect state (survives re-enumeration). */
-    uint8_t need_reconnect; /* repair the session before the next command */
-    uint8_t reconnecting;
-    uint8_t gave_up; /* the drive is gone for good: stop trying */
-    uint8_t failures; /* consecutive failed reconnects */
-    uint8_t bad_streak; /* recoveries without a successful transfer in between */
-    uint8_t media_known;
-    uint32_t media_hash; /* identity of the drive as first mounted */
-    uint32_t media_last_lba;
-    uint32_t media_block;
 };
 
 struct usb_storage_media_info {

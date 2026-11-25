@@ -91,13 +91,9 @@ enum {
 #define CONNECT_WAIT_MS 2000u /* storage bridges can be slower than a dev board */
 
 /* ---------------------------------------------------------------- log */
-#define LOG_SIZE 12288u
-#define LOG_KEEP 3072u /* the start of the log (the bring-up) is always kept */
-#define LOG_DROP 4096u /* when full, the oldest part after it is dropped */
-static char logbuf[LOG_SIZE];
+static char logbuf[8192];
 static size_t loglen;
 static bool log_on; /* chatty logging only while opening/closing a session */
-static bool log_event_pending, log_frozen;
 static bool timer_on;
 static uint32_t tmr_base = TIMER_FIRST;
 static uint32_t t_saved_ctl, t_saved_src, t_saved_load, t_start, t_kick;
@@ -109,35 +105,12 @@ static uint32_t now_ms(void)
     return timer_on ? (uint32_t)(((uint64_t)(ticks() - t_start) * 1000u) >> 15) : 0;
 }
 
-/* Full: keep the head, drop the next LOG_DROP bytes (whole lines only). */
-static void log_make_room(void)
-{
-    static const char marker[] = "[... older entries dropped ...]\n";
-    size_t head = LOG_KEEP, from = LOG_KEEP + LOG_DROP;
-    const char *nl;
-    while (head > 0 && logbuf[head - 1] != '\n') {
-        --head;
-    }
-    nl = from < loglen ? memchr(logbuf + from, '\n', loglen - from) : NULL;
-    from = nl ? (size_t)(nl - logbuf) + 1 : loglen;
-    memmove(logbuf + head + sizeof marker - 1, logbuf + from, loglen - from);
-    memcpy(logbuf + head, marker, sizeof marker - 1);
-    loglen = head + sizeof marker - 1 + (loglen - from);
-    logbuf[loglen] = 0;
-}
-
 void otg_log(const char *format, ...)
 {
     va_list ap;
     int n;
-    if (log_frozen) {
-        return;
-    }
-    if (!log_on) {
-        log_event_pending = true; /* something happened outside a bring-up */
-    }
     if (loglen + 200 >= sizeof logbuf) {
-        log_make_room();
+        return;
     }
     loglen += (size_t)snprintf(logbuf + loglen, sizeof logbuf - loglen, "[%5lu] ",
                                (unsigned long)now_ms());
@@ -149,17 +122,6 @@ void otg_log(const char *format, ...)
     }
     logbuf[loglen++] = '\n';
     logbuf[loglen] = 0;
-}
-
-bool otg_log_pending(void) { return log_event_pending; }
-void otg_log_clear_pending(void) { log_event_pending = false; }
-void otg_log_freeze(bool frozen) { log_frozen = frozen; }
-const char *otg_log_buffer(size_t *length)
-{
-    if (length) {
-        *length = loglen;
-    }
-    return logbuf;
 }
 
 #define lg(...)                                                                                    \
@@ -547,17 +509,6 @@ static bool watch(uint32_t ms, bool (*until)(void), const char *what)
     return true;
 }
 
-/* Always logged: the state of the USB block when something went wrong. */
-static void log_regs(const char *tag)
-{
-    otg_log("%s: gate=%08lx pmu08=%08lx cap=%08lx csr=%08lx isr=%08lx cmd=%08lx sts=%08lx "
-            "port=%08lx gimr=%08lx",
-            tag, (unsigned long)R32(PMU_GATE), (unsigned long)R32(PMU_USBPWR),
-            (unsigned long)U(CAPLEN), (unsigned long)U(OTGCSR), (unsigned long)U(OTGISR),
-            (unsigned long)U(USBCMD), (unsigned long)U(USBSTS), (unsigned long)U(PORTSC),
-            (unsigned long)U(GIMR));
-}
-
 static bool vbus_valid(void) { return (U(OTGCSR) & (CSR_B_SESS_VLD | CSR_A_VBUS_VLD)) != 0; }
 static bool role_host(void) { return !(U(OTGCSR) & CSR_ROLE_DEV); }
 static bool port_connected(void) { return (U(PORTSC) & PO_CONN) != 0; }
@@ -853,7 +804,6 @@ void otg_host_close(void)
 }
 
 bool otg_host_active(void) { return sess.open; }
-bool otg_in_op(void) { return op_depth != 0; }
 
 /* Cheap health check of a live session, with IRQs off and the window ungated. */
 static bool session_alive(const char **why)
@@ -887,6 +837,33 @@ static bool session_alive(const char **why)
     return true;
 }
 
+/* Optional task callback: keep the USB register window available while
+ * Documents is idle. The same storage lock used by filesystem callbacks
+ * must be held by the caller so this cannot overlap a SCSI transaction.
+ * This only checks/guards the existing session; it does not enumerate or
+ * attempt to re-power a device that has already disconnected.
+ */
+int otg_host_background_tick(void)
+{
+    const char *why = "unknown";
+    if (!sess.open) {
+        return -1;
+    }
+    if (op_depth || op_enter_raw()) {
+        return 1; /* let the worker retry after the current OS activity */
+    }
+    (void)usb_ungate();
+    if (!session_alive(&why)) {
+        otg_log("background tick: session lost: %s", why);
+        session_teardown();
+        op_leave_raw();
+        return -1;
+    }
+    guard_os();
+    op_leave_raw();
+    return 0;
+}
+
 int otg_op_begin(void)
 {
     const char *why = "";
@@ -904,7 +881,6 @@ int otg_op_begin(void)
     (void)usb_ungate(); /* TI-OS may have re-gated the window while we were idle */
     if (!session_alive(&why)) {
         otg_log("session lost: %s", why);
-        log_regs("  at loss");
         session_teardown();
         op_leave_raw();
         return -1;

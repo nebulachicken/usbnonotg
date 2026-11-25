@@ -68,15 +68,10 @@ TI-OS is the host, the driver registers with its USB stack, and hot-plug works.
 
 Differences from the OS-stack path:
 
-- **The drive must be plugged in before launching**, and there is no hot-plug
-  detection. TI-OS can disturb an idle host session, so when a session is lost
-  or a transfer cannot be recovered, the driver redoes the bring-up on the next
-  access (5 V cycled, HNP, port reset, enumeration) and checks it is the *same*
-  drive (capacity and a hash of sector 0) before carrying on. A different drive
-  is refused, because the FAT state kept in RAM would corrupt it. A reconnect
-  takes a few seconds. After two failed attempts in a row the driver gives up,
-  switches 5 V off, and the volumes stay unavailable until a reboot (the
-  filesystem hooks cannot be installed twice).
+- **One session per boot.** The drive must be plugged in before launching, and
+  there is no hot-plug. If it is unplugged, or the session is lost, the volumes
+  become unavailable and 5 V is switched off at the next access. Mounting again
+  needs a reboot, because the filesystem hooks cannot be installed twice.
 - **5 V stays on while mounted** (the calculator's battery feeds it). Use a
   self-powered drive. Do not connect a computer, charger or powered hub: the
   driver refuses to start if it sees VBUS, and an external supply on VBUS must
@@ -87,7 +82,7 @@ Differences from the OS-stack path:
   report ready (spinning disks).
 - TI-OS keeps running while the driver polls the controller (IRQ mode 2, as in
   `otgweb`); between transfers TI-OS may re-gate or re-mask the USB block, so
-  every transfer re-checks the session first and reconnects if it is gone.
+  every transfer re-checks the session first and gives up cleanly if it is gone.
   How TI-OS behaves toward an idle host session is the largest unknown.
 
 ## Source layout
@@ -166,27 +161,10 @@ The original supplied sources are preserved in `original-driver.zip`.
 `.toolchain/` contains ignored SDK/reference downloads from development; the
 driver's build only needs the vendored FatFs files and your normal SDK.
 
-### Diagnosing problems in forced host mode
-
-Two logs are available:
-
-- `usb-storage_log.txt.tns`, written next to the program at launch: the
-  bring-up (5 V, HNP, role switch, port reset, enumeration).
-- An **opt-in event log on the drive**: create an empty file named
-  `usb-storage-log.txt` in the root of the drive (from a PC). Whenever
-  something has happened since the last write (a lost session, a reconnect,
-  a failed transfer) the driver rewrites that file with its log. A "session
-  lost" entry includes the USB controller registers at that moment. The driver
-  never creates the file and never writes to a drive that does not have it.
-
-Please send both when reporting a problem.
-
 ## Forced-host source files
 
 - `otg_host.c/.h`: bring-up, session guard, polled control and bulk transfers.
-- `usb_host.c/.h`: enumeration, Bulk-Only interface search, host transport,
-  reconnect and same-drive check.
-- `usb_diag.c/.h`: the opt-in event log on the drive.
+- `usb_host.c/.h`: enumeration, Bulk-Only interface search, host transport.
 - `tests/test_host.c`: host tests with a fake Bulk-Only drive (descriptor
   parsing, toggle accounting, chunking, the real SCSI layer, session loss).
 
@@ -197,3 +175,24 @@ FatFs R0.16 is vendored from the
 `4f60a12c58c3de4246857ad87c40239ecd93349b`. Its copyright/license notices are
 retained in the files. See `vendor/fatfs/UPSTREAM.md` for provenance and local
 configuration changes.
+
+## Experimental background USB maintenance
+
+The forced-host source contains an optional Nucleus worker (`usb_background.c`).
+If enabled for a verified OS profile, it periodically checks the existing USB
+host session and reapplies the controller's USB clock/interrupt guard while the
+calculator is idle. It is serialized with FAT/SCSI operations using the same
+filesystem lock. It does not perform transfers, re-enumerate a disconnected
+device, or reapply VBUS power after a session has been lost.
+
+**This worker is disabled for the supplied CX II OS 6.2.0.333 profiles.**
+`nl_set_resident()` only preserves the executable's memory after exit; it does
+not schedule code. Hackspire's published Ndless syscall list does not expose
+Nucleus task creation, and the community-documented `TCC_Create_Task` entry is
+an unstable internal API. The source deliberately leaves its function address
+and code signature unset rather than guessing. Enabling it requires verifying
+the exact OS image's function entry, ARM calling convention, task-control-block
+size, task priority range, and stack requirements.
+
+The driver therefore continues to rely on its existing on-demand host-session
+checks until those details are independently confirmed.

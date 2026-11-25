@@ -4,7 +4,6 @@
 #include <os.h>
 #include "fat.h"
 #include "console.h"
-#include "usb_diag.h"
 #include <stddef.h>
 #include "os_abi.h"
 #include "os_runtime.h"
@@ -41,9 +40,6 @@ void usb_storage_lock(void)
 
 void usb_storage_unlock(void)
 {
-    if (lock_depth == 1) {
-        usb_diag_flush(); /* still locked, and no FatFs call is in progress */
-    }
     if (--lock_depth == 0) {
         lock_owner = NULL;
         usb_os_semaphore_release(semaphore);

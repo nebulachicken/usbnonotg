@@ -56,6 +56,11 @@ int otg_host_probe(void);
 int otg_host_open(void);
 void otg_host_close(void);
 bool otg_host_active(void);
+/* Called by the optional background worker while holding the storage lock.
+ * Returns 0 when healthy, 1 for a transient inability to enter, or -1
+ * when the session has been torn down.
+ */
+int otg_host_background_tick(void);
 
 /* Bracket every burst of hardware access. Takes over the timer and the USB
  * register window, re-checks that the session is still alive and lets TI-OS run
@@ -82,19 +87,9 @@ int otg_control(uint8_t type, uint8_t req, uint16_t value, uint16_t index, const
 int otg_bulk_chunk(uint8_t ep, bool in, void *buf, unsigned len, unsigned mps, unsigned toggle,
                    uint32_t timeout_ms);
 
-/* True between otg_op_begin() and the matching otg_op_end(). */
-bool otg_in_op(void);
-
-/* In-RAM log of the bring-up and of everything that goes wrong later. main()
- * writes it to a file at launch; usb_diag.c copies it to the drive on request.
- * A message logged outside a bring-up counts as an "event" and marks the log
- * pending until otg_log_clear_pending(). */
+/* In-RAM log of the bring-up (and later faults), written to a file by main(). */
 void otg_log(const char *format, ...) __attribute__((format(printf, 1, 2)));
 size_t otg_log_dump(const char *program_path);
-bool otg_log_pending(void);
-void otg_log_clear_pending(void);
-void otg_log_freeze(bool frozen); /* drop new messages, e.g. while the log is copied out */
-const char *otg_log_buffer(size_t *length);
 
 const char *otg_strerror(int code);
 

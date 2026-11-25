@@ -78,116 +78,10 @@ unsigned usb_host_packets(int in, unsigned moved, unsigned requested, unsigned m
 
 /* ------------------------------------------------------------ transport */
 
-#define MAX_RECONNECT_FAILURES 2
-
-static uint32_t fnv1a(const uint8_t *p, size_t n)
-{
-    uint32_t h = 2166136261u;
-    while (n--) {
-        h = (h ^ *p++) * 16777619u;
-    }
-    return h;
-}
-
-/* Capacity and a hash of sector 0 (MBR / boot sector, including the disk
- * signature). Read through the SCSI layer, so it needs a live session. */
-static int media_identity(struct usb_softc *sc, uint32_t *hash)
-{
-    static uint8_t sector[4096];
-    if (sc->sc_media.block_size == 0 || sc->sc_media.block_size > sizeof sector) {
-        return -1;
-    }
-    if (usb_storage_scsi_blocks(sc, 0, 1, sector, sc->sc_media.block_size, 0)) {
-        return -1;
-    }
-    *hash = fnv1a(sector, sc->sc_media.block_size);
-    return 0;
-}
-
-int usb_host_remember_media(struct usb_softc *sc)
-{
-    uint32_t hash;
-    if (!sc || !sc->sc_media.valid || media_identity(sc, &hash)) {
-        return -1;
-    }
-    sc->host.media_hash = hash;
-    sc->host.media_last_lba = sc->sc_media.last_lba;
-    sc->host.media_block = sc->sc_media.block_size;
-    sc->host.media_known = 1;
-    return 0;
-}
-
-/* The session is gone or unusable (TI-OS got at the controller, the drive
- * dropped off, a recovery failed). Bring the bus up again and make sure it is
- * the same drive, so the filesystem state kept in RAM is still valid. Must run
- * outside any hardware burst (the caller is host_enter()). */
-static int host_reconnect(struct usb_softc *sc)
-{
-    struct usb_host_dev *h = &sc->host;
-    uint32_t hash = 0;
-    int rc;
-    if (h->gave_up || h->reconnecting) {
-        return -1;
-    }
-    h->reconnecting = 1;
-    h->need_reconnect = 0;
-    otg_log("reconnect: bringing the bus up again (attempt %u)", (unsigned)h->failures + 1);
-    otg_host_close(); /* no-op when the session is already closed */
-    rc = otg_host_open();
-    if (rc) {
-        otg_log("reconnect: %s", otg_strerror(rc));
-        goto failed;
-    }
-    if (usb_host_attach(sc)) {
-        otg_log("reconnect: attach failed: %s", usb_host_last_error());
-        goto failed_open;
-    }
-    if (usb_storage_scsi_refresh_media(sc)) {
-        otg_log("reconnect: the drive did not become ready");
-        goto failed_open;
-    }
-    if (h->media_known) {
-        if (sc->sc_media.last_lba != h->media_last_lba ||
-            sc->sc_media.block_size != h->media_block || media_identity(sc, &hash) ||
-            hash != h->media_hash) {
-            /* A different drive: the cached FAT state would corrupt it. */
-            otg_log("reconnect: this is a different drive, not remounting");
-            h->gave_up = 1;
-            h->reconnecting = 0;
-            otg_host_close();
-            return -1;
-        }
-    }
-    h->failures = 0;
-    h->bad_streak = 0;
-    h->reconnecting = 0;
-    otg_log("reconnect: ok, same drive again");
-    return 0;
-failed_open:
-    otg_host_close();
-failed:
-    if (++h->failures >= MAX_RECONNECT_FAILURES) {
-        h->gave_up = 1;
-        otg_log("reconnect: giving up, the drive is gone");
-    }
-    h->reconnecting = 0;
-    return -1;
-}
-
 static int host_enter(struct usb_softc *sc)
 {
-    struct usb_host_dev *h = &sc->host;
-    if (!h->need_reconnect && !otg_op_begin()) {
-        return 0;
-    }
-    /* Not from inside a hardware burst or from the reconnect's own commands. */
-    if (otg_in_op() || h->reconnecting) {
-        return 1;
-    }
-    if (host_reconnect(sc)) {
-        return h->gave_up ? -1 : 1; /* a failed attempt may be followed by a working one */
-    }
-    return otg_op_begin() ? 1 : 0;
+    (void)sc;
+    return otg_op_begin();
 }
 
 static void host_leave(struct usb_softc *sc)
@@ -232,28 +126,21 @@ static int host_bulk(struct usb_softc *sc, int in, void *buf, uint32_t len, uint
             break; /* short transfer: the device has nothing more to send */
         }
     }
-    sc->host.bad_streak = 0; /* the bus works */
     return (int)total;
 }
 
 static int clear_halt(uint8_t ep) { return otg_control(0x02, 1, 0, ep, NULL, NULL, 0) < 0 ? -1 : 0; }
 
-/* A failed command normally just needs a Bulk-Only reset. When that does not
- * work either, or keeps being needed without any transfer succeeding in
- * between, the session is broken: flag it for repair before the next command
- * and report success, so the SCSI layer keeps the medium valid instead of
- * declaring it dead for good. (The failed command itself still returns an
- * error to its caller.) */
 static int host_reset_recovery(struct usb_softc *sc)
 {
-    struct usb_host_dev *h = &sc->host;
-    int ok = otg_control(0x21, 0xff, 0, h->iface, NULL, NULL, 0) >= 0 && !clear_halt(h->ep_in) &&
-             !clear_halt(h->ep_out);
-    h->toggle_in = h->toggle_out = 0;
-    if (!ok || ++h->bad_streak >= 3) {
-        otg_log("recovery %s: session will be re-established", ok ? "keeps being needed" : "failed");
-        h->need_reconnect = 1;
+    /* Bulk-Only Mass Storage Reset, then clear both halts and restart at DATA0. */
+    if (otg_control(0x21, 0xff, 0, sc->host.iface, NULL, NULL, 0) < 0) {
+        return -1;
     }
+    if (clear_halt(sc->host.ep_in) || clear_halt(sc->host.ep_out)) {
+        return -1;
+    }
+    sc->host.toggle_in = sc->host.toggle_out = 0;
     return 0;
 }
 
@@ -340,12 +227,7 @@ int usb_host_attach(struct usb_softc *sc)
     }
     otg_wait_ms(20);
 
-    sc->host.cfg = found.cfg;
-    sc->host.iface = found.iface;
-    sc->host.ep_in = found.ep_in;
-    sc->host.ep_out = found.ep_out;
-    sc->host.mps_in = found.mps_in;
-    sc->host.mps_out = found.mps_out;
+    sc->host = found;
     sc->host.toggle_in = sc->host.toggle_out = 0;
     sc->tp = &usb_host_transport;
     sc->sc_ifaceno = found.iface;

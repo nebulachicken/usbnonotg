@@ -38,6 +38,15 @@ struct usb_os_profile {
     uint32_t scan_begin;
     uint32_t scan_end;
     uint32_t hooks[USB_HOOK_COUNT];
+    /* Optional TCC_Create_Task entry point. Zero means unsupported.
+     * This private Nucleus API must be verified separately per OS image.
+     */
+    uint32_t tcc_create_task;
+    uint32_t tcc_create_task_sig[2];
+    uint32_t tcc_create_task_mask[2];
+    /* Must be set only after the full call ABI and TCB size are verified. */
+    uint32_t tcc_create_task_abi_verified;
+    uint32_t tcc_task_tcb_size;
     struct usb_os_usb_layout usb;
 };
 

@@ -180,3 +180,26 @@ USB enumeration while filesystem access is active. The driver uses bounded
 polling, checks transfer length/status and CSW signature/tag/residue/status,
 and retains DMA storage permanently so a failed controller cannot DMA into
 freed allocations. It does not claim full/low-speed or split-transaction support.
+
+
+## Optional background maintenance task
+
+`usb_background.c` contains an optional low-priority Nucleus worker. When a
+verified per-OS `TCC_Create_Task` entry is supplied, it periodically calls
+`otg_host_background_tick()` while holding the same serialization lock used by
+the filesystem hooks. The tick only ungates the USB register window, verifies
+the active host/port state, and reapplies the USB interrupt-mask guard. It does
+not start transfers, re-enumerate a lost device, or restore VBUS after shutdown.
+
+The worker is deliberately disabled for the supplied OS 6.2.0.333 profiles.
+Hackspire documents `nl_set_resident()` as preserving program memory after exit,
+not as a scheduler. Its published Ndless syscall list does not expose task
+creation. A community discussion identifies `TCC_Create_Task` as an unstable
+internal function not exposed by Ndless. The provided reverse-engineering notes
+do not establish that function's entry address, code signature, calling
+convention, task-control-block size, priority range, or stack requirements for
+this exact OS image. The profile fields therefore remain zero and the guarded
+wrapper refuses to call the function.
+
+The existing on-demand session checks remain the only active maintenance path
+until the task API is verified against the exact firmware image.

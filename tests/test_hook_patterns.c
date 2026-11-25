@@ -69,6 +69,12 @@ int main(void)
 
         assert(profile != NULL);
         assert(profile->reviewed == (index == 44 || index == 46));
+        /* No Nucleus task function address or ABI has been verified for the
+         * supported CX II images, so background task creation must stay off.
+         */
+        assert(profile->tcc_create_task == 0);
+        assert(profile->tcc_create_task_abi_verified == 0);
+        assert(profile->tcc_task_tcb_size == 0);
     }
 
     puts("hook pattern bounds, block overlap, ambiguity, decoders and OS profiles passed");

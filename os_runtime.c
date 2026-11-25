@@ -1,4 +1,5 @@
 #include <os.h>
+#include <string.h>
 #include "os_runtime.h"
 #include "hook_patterns.h"
 #include "console.h"
@@ -94,3 +95,55 @@ int usb_os_semaphore_release(void *semaphore)
 
     return release(semaphore);
 }
+
+/* Internal Nucleus task creation is deliberately not treated as a public
+ * Ndless syscall. A profile must provide an independently verified address
+ * and a two-instruction signature before this indirect call is possible.
+ */
+int usb_os_background_task_available(void)
+{
+    const struct usb_os_profile *profile = active_profile;
+    volatile const uint32_t *code;
+    unsigned i;
+
+    if (!profile || !profile->tcc_create_task ||
+        !profile->tcc_create_task_mask[0] || !profile->tcc_create_task_mask[1] ||
+        !profile->tcc_create_task_abi_verified ||
+        profile->tcc_task_tcb_size != sizeof(NU_TASK)) {
+        return 0;
+    }
+    if ((profile->tcc_create_task & 3u) || profile->scan_end < 8u ||
+        profile->tcc_create_task < profile->scan_begin ||
+        profile->tcc_create_task > profile->scan_end - 8u) {
+        return 0;
+    }
+
+    code = (volatile const uint32_t *)(uintptr_t)profile->tcc_create_task;
+    for (i = 0; i < 2; ++i) {
+        if ((code[i] & profile->tcc_create_task_mask[i]) !=
+            (profile->tcc_create_task_sig[i] & profile->tcc_create_task_mask[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int usb_os_task_create(void *tcb, char *name, usb_os_task_entry entry, unsigned argc,
+                       void *argv, void *stack, unsigned stack_size, unsigned priority,
+                       unsigned time_slice, unsigned preempt, unsigned auto_start)
+{
+    typedef int (*tcc_create_task_fn)(void *, char *, usb_os_task_entry, unsigned, void *,
+                                      void *, unsigned, unsigned, unsigned, unsigned, unsigned);
+    const struct usb_os_profile *profile = active_profile;
+    tcc_create_task_fn create;
+
+    if (!tcb || !name || !entry || !stack || !stack_size ||
+        !usb_os_background_task_available()) {
+        return -1;
+    }
+
+    create = (tcc_create_task_fn)(uintptr_t)profile->tcc_create_task;
+    return create(tcb, name, entry, argc, argv, stack, stack_size, priority,
+                  time_slice, preempt, auto_start);
+}
+

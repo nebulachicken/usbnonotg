@@ -73,15 +73,10 @@ static int command(struct usb_softc *sc, const uint8_t *cdb, uint8_t cdb_len, vo
     if (!sc || !sc->tp || sc->sc_detached) {
         return -1;
     }
-    if (sc->tp->enter) {
-        int e = sc->tp->enter(sc);
-        if (e) {
-            if (e < 0) {
-                sc->sc_detached = 1;
-                sc->sc_media.valid = 0;
-            }
-            return -1;
-        }
+    if (sc->tp->enter && sc->tp->enter(sc)) {
+        sc->sc_detached = 1;
+        sc->sc_media.valid = 0;
+        return -1;
     }
     r = command_locked(sc, cdb, cdb_len, buf, len, in);
     if (sc->tp->leave) {

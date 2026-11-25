@@ -13,4 +13,15 @@ int usb_os_semaphore_create(void *semaphore, const char *name, unsigned count, u
 int usb_os_semaphore_obtain(void *semaphore, unsigned timeout);
 int usb_os_semaphore_release(void *semaphore);
 
+/* Experimental Nucleus task support. It is disabled unless the active
+ * OS profile contains a verified function address and code signature.
+ */
+typedef void (*usb_os_task_entry)(unsigned argc, void *argv);
+int usb_os_background_task_available(void);
+int usb_os_task_create(void *tcb, char *name, usb_os_task_entry entry,
+                       unsigned argc, void *argv, void *stack,
+                       unsigned stack_size, unsigned priority,
+                       unsigned time_slice, unsigned preempt,
+                       unsigned auto_start);
+
 #endif

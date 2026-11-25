@@ -12,6 +12,12 @@ const struct usb_os_profile usb_os_profiles[] = {
         .abi = USB_OS_ABI_NUCLEUS_CX2_V1,
         .scan_begin = 0x10300000,
         .scan_end = 0x10500000,
+        /* No verified TCC_Create_Task entry point/ABI for this image. */
+        .tcc_create_task = 0,
+        .tcc_create_task_sig = {0, 0},
+        .tcc_create_task_mask = {0, 0},
+        .tcc_create_task_abi_verified = 0,
+        .tcc_task_tcb_size = 0,
         .hooks =
             {
                 [USB_HOOK_FINDMOUNT] = 0x10499c38,
@@ -54,6 +60,12 @@ const struct usb_os_profile usb_os_profiles[] = {
          * rename callback selects the second signature match. Uses the same
          * core ABI and USB layouts as NCAS, as confirmed by the maintainer.
          */
+        /* No verified TCC_Create_Task entry point/ABI for this image. */
+        .tcc_create_task = 0,
+        .tcc_create_task_sig = {0, 0},
+        .tcc_create_task_mask = {0, 0},
+        .tcc_create_task_abi_verified = 0,
+        .tcc_task_tcb_size = 0,
         .hooks =
             {
                 [USB_HOOK_FINDMOUNT] = 0x1049ac38,

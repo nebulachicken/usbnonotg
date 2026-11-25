@@ -5,6 +5,7 @@
 #include "fat.h"
 #include "console.h"
 #include "os_runtime.h"
+#include "usb_background.h"
 #include <string.h>
 
 extern unsigned int nl_osid(void);
@@ -194,11 +195,6 @@ static int start_forced(char *msg, size_t msg_size)
         otg_host_close();
         return -1;
     }
-    if (usb_host_remember_media(&forced_sc)) {
-        snprintf(msg, msg_size, "The drive's first sector could not be read.");
-        otg_host_close();
-        return -1;
-    }
     return 0;
 }
 
@@ -276,6 +272,17 @@ int main(int argc, char **argv)
             log("usb-storage: mounted %d FAT volume(s)\n", mounted);
             log("Driver installed. Mount roots: A:/documents/usbA through usbC\n");
             log("5 V stays on while the drive is mounted. Close all files before unplugging.\n");
+            {
+                int bg = usb_background_start();
+                if (bg == 0) {
+                    log("Background USB maintenance task started.\n");
+                } else if (bg == 1) {
+                    log("Background task unavailable: no verified Nucleus task API for this OS.\n");
+                    log("Using existing on-demand USB session checks.\n");
+                } else {
+                    log("Background task startup failed (%d); using on-demand checks.\n", bg);
+                }
+            }
             log("Press any key to return to Documents.\n");
         }
     } else {

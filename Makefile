@@ -3,7 +3,7 @@ GENZEHN = genzehn
 CFLAGS = -std=gnu11 -Wall -Wextra -Werror -Wno-unused-parameter -marm -Os -ffunction-sections -fdata-sections
 CPPFLAGS += -I. -Ivendor/fatfs
 LDFLAGS += -Wl,--gc-sections
-SOURCES = usb.c bulk.c otg_host.c usb_host.c usb_diag.c usb_storage_scsi.c fat.c namespace.c os_integration.c \
+SOURCES = usb.c usb_background.c bulk.c otg_host.c usb_host.c usb_storage_scsi.c fat.c namespace.c os_integration.c \
           os_profiles.c os_runtime.c hook_patterns.c runtime.c console.c \
           vendor/fatfs/ff.c vendor/fatfs/ffunicode.c
 OBJECTS = $(SOURCES:%.c=build/%.o)
